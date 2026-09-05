@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4D-ID Demo &mdash; A building that can be worked</title>
+<link rel="stylesheet" href="controls.css">
+<style>
+  :root{--bg:#0b0f14;--panel:#141c26;--line:#233140;--ink:#eaf1f8;--muted:#93a4b5;--a1:#4dd0c4;--a2:#7c8cff;--warm:#ff7a59;--font:'Helvetica Neue',Arial,sans-serif;--mono:'SF Mono',Menlo,Consolas,monospace}
+  *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:var(--font);background:var(--bg);color:var(--ink);overflow:hidden}
+  a{color:var(--a1);text-decoration:none}
+  .top{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line);background:#080b0f;height:47px}
+  .top .q{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--a1),var(--a2));display:grid;place-items:center;color:#04231f;font-weight:900}
+  .top b{font-weight:800}.top .muted{color:var(--muted);font-size:13px}
+  .top .right{margin-left:auto;display:flex;gap:16px;font-size:13.5px}
+  .layout{display:grid;grid-template-columns:360px 1fr;height:calc(100% - 47px)}
+  @media(max-width:820px){.layout{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+  aside{border-right:1px solid var(--line);overflow-y:auto;padding:16px;background:var(--bg)}
+  #stage{position:relative}
+  canvas{display:block}
+  h1{font-size:18px;margin:0 0 4px}.lede{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px;margin-bottom:12px}
+  .card h3{margin:0 0 6px;font-size:13.5px}.card .k{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--a2)}
+  .card p{margin:4px 0 8px;font-size:12.5px;color:var(--muted)}
+  button{font-family:inherit;font-size:12.5px;background:linear-gradient(135deg,var(--a1),var(--a2));color:#04231f;font-weight:800;border:none;border-radius:7px;padding:8px 12px;cursor:pointer;margin:3px 4px 3px 0}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600}
+  button.warm{background:var(--warm);color:#fff}
+  .log{background:#080b0f;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:var(--mono);font-size:11px;line-height:1.5;max-height:190px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;color:#cfe0ee}
+  .log .id{color:var(--a1)}.log .ev{color:var(--warm)}.log .ok{color:#33d17a}
+  #hud{position:absolute;left:14px;top:12px;font-size:12px;color:var(--muted);background:#080b0fcc;border:1px solid var(--line);border-radius:8px;padding:8px 11px;pointer-events:none}
+  #pick{position:absolute;right:14px;bottom:14px;max-width:380px;background:#080b0fee;border:1px solid var(--line);border-radius:10px;padding:12px;font-family:var(--mono);font-size:11px;line-height:1.5;white-space:pre-wrap;word-break:break-all;display:none;box-shadow:0 10px 40px #0008}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;font-size:11.5px;color:var(--muted)}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .l-static::before{background:#5b6b7a}.l-robot::before{background:#4dd0c4}.l-drone::before{background:#7c8cff}.l-fix::before{background:#ff7a59}
+</style>
+</head>
+<body>
+<div class="top"><span class="q">Q</span><b>4D-ID</b><span class="muted">demo &middot; a building that can be worked</span>
+  <div class="right"><a href="demos.html">&larr; Demos</a><a href="home.html">Home</a></div></div>
+
+<div class="layout">
+<aside>
+  <h1>Every thing here has a name.</h1>
+  <p class="lede">A robot works the floors while a drone surveys from above. The building, each floor, each room, the sprinkler heads, the robot, and the drone are all real minted 4D-IDs. Click anything.</p>
+
+  <div class="card"><span class="k">Scenario</span><h3>Run the story</h3>
+    <p>Watch three ideas at once: physical entities moving inside a static hierarchy, a drone handing an observation to the robot by name, and a repair addressed to one specific fixture.</p>
+    <button id="play">&#9654; Play scenario</button><button class="ghost" id="reset">Reset</button></div>
+
+  <div class="card"><span class="k">The operable twin</span><h3>Request a repair</h3>
+    <p>"The sprinkler head in the 3rd-floor conference room, by the door." That sentence is one 4D-ID. Send the robot to it.</p>
+    <button class="warm" id="repair">Dispatch repair</button></div>
+
+  <div class="card"><span class="k">Hierarchy</span><h3>Move the whole building</h3>
+    <p>Everything inside moves with it, and only <em>one</em> record is published, because children never republish when only the parent moved.</p>
+    <button class="ghost" id="shift">Shift building</button> <span id="recs" style="font-size:12px;color:var(--muted)">records published: 0</span></div>
+
+  <div class="card"><span class="k">Event log</span><div class="log" id="log">ready.</div></div>
+
+  <div class="card"><div class="legend"><span class="l-static">static (building, floors, fixtures)</span><span class="l-robot">robot, physical mode</span><span class="l-drone">drone, physical mode</span><span class="l-fix">fixture needing repair</span></div></div>
+</aside>
+<div id="stage"><div id="hud">drag to orbit &middot; scroll or buttons to zoom &middot; click an entity</div>
+<div class="ctl">
+  <button id="zin" title="Zoom in">+</button>
+  <button id="zout" title="Zoom out">&minus;</button>
+  <div class="sep"></div>
+  <button id="vreset" title="Reset view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+  <button id="vtop" title="Top-down view"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></svg></button>
+  <button id="vorbit" title="Auto-orbit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="9" ry="4"/></svg></button>
+  <div class="sep"></div>
+  <button id="frobot" title="Follow robot"><svg viewBox="0 0 24 24"><rect x="6" y="9" width="12" height="9" rx="2"/><circle cx="12" cy="6" r="2"/><path d="M9 13h.01M15 13h.01"/></svg></button>
+  <button id="fdrone" title="Follow drone"><svg viewBox="0 0 24 24"><path d="M12 12l-6-6M12 12l6-6M12 12l-6 6M12 12l6 6"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+</div>
+<div id="pick"></div></div>
+</div>
+
+<script src="h3-js.umd.js"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from "three";
+import * as R from "./4did-lite.js";
+
+// ---------- identity: mint a real 4D-ID for every entity in the scene ----------
+const SITE = { lat: 33.7130, lng: -117.9430 }; // a plausible site; every entity anchors here
+const mint = (label, cls, extra={}) => R.createEntity({ lat:SITE.lat, lng:SITE.lng, label, cls, ...extra });
+R.clearAll();
+const ids = {};
+ids.building = mint("Terminal B Office", "built:building");
+ids.floors = [1,2,3].map(n => mint(`Floor ${n}`, "built:floor", { vref:`floor.${n}` }));
+ids.rooms = { conf3: mint("3F Conference Room", "built:room", { vref:"floor.3.conf" }), lobby: mint("Lobby", "built:room", { vref:"floor.1.lobby" }) };
+ids.sprinkler = mint("Sprinkler head, 3F conference room, by the door", "built:fixture", { vref:"floor.3.conf.spr-01" });
+ids.robot = mint("Maintenance robot MR-7", "vehicle:robot");
+ids.drone = mint("Survey drone SD-2", "vehicle:drone");
+// mark motion modes in labels for the envelope
+const short = id => id.split(":").pop().slice(0,10)+"…";
+
+// ---------- three.js scene ----------
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0f14);
+scene.fog = new THREE.Fog(0x0b0f14, 60, 140);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 500);
+camera.position.set(34, 26, 40);
+let camTheta = 0.85, camPhi = 1.05, camR = 46, camTarget = new THREE.Vector3(0,7,0);
+function updateCam(){ camera.position.set(camTarget.x + camR*Math.sin(camPhi)*Math.sin(camTheta), camTarget.y + camR*Math.cos(camPhi), camTarget.z + camR*Math.sin(camPhi)*Math.cos(camTheta)); camera.lookAt(camTarget); }
+updateCam();
+
+// ---------- on-screen controls ----------
+const HOME = { th:0.85, ph:1.05, r:46, tgt:new THREE.Vector3(0,7,0) };
+let autoOrbit=false, follow=null; // follow: null | 'robot' | 'drone'
+const $c = id => document.getElementById(id);
+function setFollow(f){ follow = (follow===f) ? null : f; $c("frobot").classList.toggle("on", follow==="robot"); $c("fdrone").classList.toggle("on", follow==="drone"); if(!follow){ camTarget.copy(HOME.tgt); } }
+$c("zin").onclick  = ()=>{ camR = Math.max(12, camR*0.8); updateCam(); };
+$c("zout").onclick = ()=>{ camR = Math.min(160, camR*1.25); updateCam(); };
+$c("vreset").onclick = ()=>{ camTheta=HOME.th; camPhi=HOME.ph; camR=HOME.r; camTarget.copy(HOME.tgt); follow=null; autoOrbit=false; $c("vorbit").classList.remove("on"); $c("frobot").classList.remove("on"); $c("fdrone").classList.remove("on"); updateCam(); };
+$c("vtop").onclick = ()=>{ camPhi=0.22; camR=Math.max(camR,40); updateCam(); };
+$c("vorbit").onclick = ()=>{ autoOrbit=!autoOrbit; $c("vorbit").classList.toggle("on", autoOrbit); };
+$c("frobot").onclick = ()=>setFollow("robot");
+$c("fdrone").onclick = ()=>setFollow("drone");
+// keyboard: +/- zoom, R reset, arrows orbit
+window.addEventListener("keydown", e=>{ if(e.target.tagName==="INPUT") return;
+  if(e.key==="+"||e.key==="=") $c("zin").click(); else if(e.key==="-") $c("zout").click(); else if(e.key==="r"||e.key==="R") $c("vreset").click();
+  else if(e.key==="ArrowLeft"){ camTheta+=0.08; updateCam(); } else if(e.key==="ArrowRight"){ camTheta-=0.08; updateCam(); }
+  else if(e.key==="ArrowUp"){ camPhi=Math.max(0.2,camPhi-0.06); updateCam(); } else if(e.key==="ArrowDown"){ camPhi=Math.min(1.45,camPhi+0.06); updateCam(); } });
+
+scene.add(new THREE.HemisphereLight(0xbcd4ff, 0x1a2230, 0.9));
+const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(30,50,20); sun.castShadow = true;
+sun.shadow.mapSize.set(2048,2048); sun.shadow.camera.left=-50; sun.shadow.camera.right=50; sun.shadow.camera.top=50; sun.shadow.camera.bottom=-50;
+scene.add(sun);
+renderer.shadowMap.enabled = true;
+
+// ground + grid (the local coordinate system)
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200,200), new THREE.MeshStandardMaterial({ color:0x11181f, roughness:1 }));
+ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+const grid = new THREE.GridHelper(120, 24, 0x233140, 0x1a2430); grid.position.y = 0.01; scene.add(grid);
+
+// building: group so "move the building" moves everything (the hierarchy)
+const building = new THREE.Group(); scene.add(building);
+const pickables = []; // {mesh, id, kind}
+const matStatic = new THREE.MeshStandardMaterial({ color:0x2a3746, roughness:.85, metalness:.05, transparent:true, opacity:.92 });
+const matFloor  = new THREE.MeshStandardMaterial({ color:0x35465a, roughness:.9 });
+const matRoom   = new THREE.MeshStandardMaterial({ color:0x4dd0c4, roughness:.8, transparent:true, opacity:.14 });
+const W=28, D=18, FH=5.2, FLOORS=3;
+// slab per floor (cutaway: only slabs + partial walls so we can see inside)
+for(let f=0; f<FLOORS; f++){
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(W, .5, D), matFloor);
+  slab.position.set(0, f*FH, 0); slab.receiveShadow = true; slab.castShadow = true; building.add(slab);
+  pickables.push({ mesh:slab, id:ids.floors[f].id, kind:"static" });
+  // back and left walls (cutaway on front/right)
+  const back = new THREE.Mesh(new THREE.BoxGeometry(W, FH-.5, .4), matStatic); back.position.set(0, f*FH + FH/2, -D/2+.2); back.castShadow=true; building.add(back);
+  const left = new THREE.Mesh(new THREE.BoxGeometry(.4, FH-.5, D), matStatic); left.position.set(-W/2+.2, f*FH + FH/2, 0); left.castShadow=true; building.add(left);
+  pickables.push({ mesh:back, id:ids.building.id, kind:"static" },{ mesh:left, id:ids.building.id, kind:"static" });
+}
+// roof slab
+const roof = new THREE.Mesh(new THREE.BoxGeometry(W,.5,D), matFloor); roof.position.set(0, FLOORS*FH, 0); roof.castShadow=true; building.add(roof);
+pickables.push({ mesh:roof, id:ids.building.id, kind:"static" });
+// 3F conference room volume + lobby volume
+const conf = new THREE.Mesh(new THREE.BoxGeometry(11, FH-.6, 8), matRoom); conf.position.set(-7, 2*FH + FH/2, -3); building.add(conf);
+pickables.push({ mesh:conf, id:ids.rooms.conf3.id, kind:"static" });
+const lobby = new THREE.Mesh(new THREE.BoxGeometry(12, FH-.6, 9), matRoom); lobby.position.set(6, FH/2, 2); building.add(lobby);
+pickables.push({ mesh:lobby, id:ids.rooms.lobby.id, kind:"static" });
+// sprinkler head: small fixture by the conference room door, on the ceiling
+const sprMat = new THREE.MeshStandardMaterial({ color:0xff7a59, emissive:0xff7a59, emissiveIntensity:.35 });
+const spr = new THREE.Mesh(new THREE.SphereGeometry(.35, 16, 16), sprMat);
+const SPR_POS = new THREE.Vector3(-2.2, 2*FH + FH - .9, 1.2); spr.position.copy(SPR_POS); building.add(spr);
+pickables.push({ mesh:spr, id:ids.sprinkler.id, kind:"fixture" });
+const sprRing = new THREE.Mesh(new THREE.RingGeometry(.6,.8,32), new THREE.MeshBasicMaterial({ color:0xff7a59, side:THREE.DoubleSide, transparent:true, opacity:.6 }));
+sprRing.position.copy(SPR_POS); sprRing.rotation.x = Math.PI/2; building.add(sprRing);
+// door marker
+const door = new THREE.Mesh(new THREE.BoxGeometry(1.6,3.2,.15), new THREE.MeshStandardMaterial({ color:0x6f86a8 })); door.position.set(-1.5, 2*FH + 1.6, 1); building.add(door);
+
+// robot (physical mode)
+const robot = new THREE.Group();
+const rb = new THREE.Mesh(new THREE.CylinderGeometry(.9,.9,1.2,24), new THREE.MeshStandardMaterial({ color:0x4dd0c4, emissive:0x1a6660, emissiveIntensity:.3 })); rb.castShadow=true; robot.add(rb);
+const rh = new THREE.Mesh(new THREE.BoxGeometry(.6,.6,.9), new THREE.MeshStandardMaterial({ color:0xeaf1f8 })); rh.position.y=.9; robot.add(rh);
+robot.position.set(8, .6+.25, 3); building.add(robot);
+pickables.push({ mesh:rb, id:ids.robot.id, kind:"robot" });
+// drone (physical mode)
+const drone = new THREE.Group();
+const dbod = new THREE.Mesh(new THREE.BoxGeometry(1.4,.35,1.4), new THREE.MeshStandardMaterial({ color:0x7c8cff, emissive:0x2a3699, emissiveIntensity:.4 })); dbod.castShadow=true; drone.add(dbod);
+const rotors=[]; for(const [x,z] of [[-.9,-.9],[.9,-.9],[-.9,.9],[.9,.9]]){ const r=new THREE.Mesh(new THREE.TorusGeometry(.42,.05,8,24), new THREE.MeshStandardMaterial({ color:0xc9d1ff })); r.rotation.x=Math.PI/2; r.position.set(x,.2,z); drone.add(r); rotors.push(r); }
+drone.position.set(-20, 22, 14); scene.add(drone);
+pickables.push({ mesh:dbod, id:ids.drone.id, kind:"drone" });
+// observation beam from drone
+const beamMat = new THREE.LineBasicMaterial({ color:0x7c8cff, transparent:true, opacity:0 });
+const beam = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), beamMat); scene.add(beam);
+
+// ---------- labels (sprites) ----------
+function makeLabel(text, color="#eaf1f8"){
+  const c=document.createElement("canvas"); const ctx=c.getContext("2d"); const f="600 26px Helvetica, Arial";
+  ctx.font=f; const w=ctx.measureText(text).width+28; c.width=w; c.height=44;
+  ctx.font=f; ctx.fillStyle="#080b0fcc"; ctx.roundRect(0,0,w,44,8); ctx.fill();
+  ctx.fillStyle=color; ctx.fillText(text,14,31);
+  const t=new THREE.CanvasTexture(c); const s=new THREE.Sprite(new THREE.SpriteMaterial({ map:t, depthTest:false, transparent:true }));
+  s.scale.set(w/44*1.6, 1.6, 1); return s;
+}
+const lblRobot = makeLabel("MR-7 · "+short(ids.robot.id), "#4dd0c4"); robot.add(lblRobot); lblRobot.position.y = 2.2;
+const lblDrone = makeLabel("SD-2 · "+short(ids.drone.id), "#c9d1ff"); drone.add(lblDrone); lblDrone.position.y = 1.4;
+const lblSpr = makeLabel("sprinkler · "+short(ids.sprinkler.id), "#ff7a59"); lblSpr.position.copy(SPR_POS).add(new THREE.Vector3(0,1.3,0)); building.add(lblSpr);
+const lblB = makeLabel("Terminal B · "+short(ids.building.id), "#93a4b5"); lblB.position.set(0, FLOORS*FH+2.2, 0); building.add(lblB);
+
+// ---------- interaction ----------
+const ray = new THREE.Raycaster(); const mouse = new THREE.Vector2(); const pickEl = document.getElementById("pick");
+let dragging=false, moved=false, last={x:0,y:0};
+renderer.domElement.addEventListener("pointerdown", e=>{ dragging=true; moved=false; last={x:e.clientX,y:e.clientY}; });
+window.addEventListener("pointermove", e=>{ if(dragging && follow){ follow=null; $c("frobot").classList.remove("on"); $c("fdrone").classList.remove("on"); } }, { capture:true });
+window.addEventListener("pointermove", e=>{ if(!dragging) return; const dx=e.clientX-last.x, dy=e.clientY-last.y; if(Math.abs(dx)+Math.abs(dy)>2) moved=true; camTheta -= dx*0.006; camPhi = Math.min(1.45, Math.max(0.2, camPhi - dy*0.006)); last={x:e.clientX,y:e.clientY}; updateCam(); });
+window.addEventListener("pointerup", e=>{ if(dragging && !moved) pick(e); dragging=false; });
+renderer.domElement.addEventListener("wheel", e=>{ camR = Math.min(140, Math.max(18, camR + e.deltaY*0.04)); updateCam(); }, { passive:true });
+function pick(e){
+  const r=renderer.domElement.getBoundingClientRect();
+  mouse.x=((e.clientX-r.left)/r.width)*2-1; mouse.y=-((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera(mouse, camera);
+  const hits=ray.intersectObjects(pickables.map(p=>p.mesh), false);
+  if(!hits.length){ pickEl.style.display="none"; return; }
+  const p=pickables.find(x=>x.mesh===hits[0].object);
+  const ctx=R.context(p.id); const mode = p.kind==="static"||p.kind==="fixture" ? "static" : "physical";
+  pickEl.style.display="block";
+  pickEl.textContent = JSON.stringify({ ...ctx, motion_mode: mode, hierarchy: p.kind==="fixture" ? ["building","floor 3","conference room","fixture"] : undefined }, null, 2);
+}
+
+// ---------- log + record counter ----------
+const logEl=document.getElementById("log"); let records=0;
+function log(html){ logEl.innerHTML += "\n"+html; logEl.scrollTop=logEl.scrollHeight; }
+function pub(who){ records++; document.getElementById("recs").textContent="records published: "+records; return `<span class="ok">publish</span> ${who}`; }
+
+// ---------- scenario ----------
+let t=0, st=0, playing=false, phase=0, robotPath=null, robotT=0, repairMode=false;
+const ROBOT_ROUTE = [ new THREE.Vector3(8,.85,3), new THREE.Vector3(-8,.85,3), new THREE.Vector3(-11,.85,-3), new THREE.Vector3(-8,.85,5), new THREE.Vector3(8,.85,3) ];
+const REPAIR_ROUTE = [ null, new THREE.Vector3(-1.5, .85, 4), new THREE.Vector3(-1.5, FH+.85, 4), new THREE.Vector3(-1.5, 2*FH+.85, 4), new THREE.Vector3(-2.2, 2*FH+.85, 1.6) ];
+function lerpPath(path, u){ const n=path.length-1; const i=Math.min(n-1, Math.floor(u*n)); const f=u*n-i; return new THREE.Vector3().lerpVectors(path[i], path[i+1], f); }
+
+document.getElementById("play").onclick = ()=>{ playing=true; phase=0; st=0; robotPath=ROBOT_ROUTE; robotT=0; repairMode=false; logEl.innerHTML="scenario started."; };
+document.getElementById("reset").onclick = ()=>{ playing=false; repairMode=false; robot.position.copy(ROBOT_ROUTE[0]); drone.position.set(-20,22,14); beamMat.opacity=0; sprMat.emissiveIntensity=.35; building.position.set(0,0,0); records=0; document.getElementById("recs").textContent="records published: 0"; logEl.innerHTML="ready."; pickEl.style.display="none"; };
+document.getElementById("repair").onclick = ()=>{
+  repairMode=true; playing=true; robotT=0; phase=0; st=0;
+  const from = robot.position.clone(); REPAIR_ROUTE[0]=from; robotPath=REPAIR_ROUTE;
+  log(`<span class="ev">repair request</span> → <span class="id">${ids.sprinkler.id}</span>`);
+  log(`resolve → hierarchy: building / floor 3 / conference room / fixture "by the door"`);
+  log(`dispatch ${short(ids.robot.id)} → navigating named hierarchy`);
+};
+document.getElementById("shift").onclick = ()=>{
+  building.position.x += 6;
+  log(pub(`${short(ids.building.id)} (building moved)`));
+  log(`children (3 floors, 2 rooms, 1 fixture, robot inside): <span class="ok">0 republished</span> — composed by hierarchy`);
+};
+
+function step(dt){
+  t += dt;
+  if(autoOrbit){ camTheta += dt*0.25; updateCam(); }
+  if(follow==="robot"){ camTarget.lerp(robot.getWorldPosition(new THREE.Vector3()), 0.12); updateCam(); }
+  else if(follow==="drone"){ camTarget.lerp(drone.getWorldPosition(new THREE.Vector3()), 0.12); updateCam(); }
+  if(playing) st += dt; // scenario clock in wall seconds: beats arrive on schedule on any device
+  // drone orbit + rotors
+  const a = t*0.35; drone.position.set(Math.cos(a)*22, 21 + Math.sin(t*0.9)*1.2, Math.sin(a)*16); drone.rotation.y = -a;
+  rotors.forEach(r=>r.rotation.z += dt*40);
+  if(!playing) return;
+  // robot along path
+  robotT = Math.min(1, robotT + dt*(repairMode?0.10:0.06));
+  const p = lerpPath(robotPath, robotT); robot.position.copy(p);
+  if(robotT>0.02){ const nxt=lerpPath(robotPath, Math.min(1,robotT+0.01)); robot.lookAt(nxt.x, robot.position.y, nxt.z); }
+  // scenario beats
+  if(!repairMode){
+    if(phase===0 && robotT>0.05){ phase=1; log(pub(`${short(ids.robot.id)} moving (physical mode, threshold publish)`)); }
+    if(phase===1 && st>3){ phase=2; beamMat.opacity=.9; log(`<span class="ev">observation</span> ${short(ids.drone.id)} sees a door on floor 3`); }
+    if(phase===2 && st>5.5){ phase=3; log(`re-identify → matches <span class="id">${short(ids.rooms.conf3.id)}</span> (conference room). No new identity minted.`); log(`relation added: observed_by ${short(ids.drone.id)} → ${short(ids.rooms.conf3.id)}`); }
+    if(phase===3 && st>7.5){ phase=4; beamMat.opacity=0; log(`handoff by name → ${short(ids.robot.id)} now holds the same 4D-ID the drone observed`); }
+    if(robotT>=1){ playing=false; log(`<span class="ok">loop complete.</span> Try "Dispatch repair" or "Shift building".`); }
+  } else {
+    if(robotT>=1){ playing=false; repairMode=false; sprMat.emissiveIntensity=1.2; log(`<span class="ok">arrived at fixture.</span> inspection posted as observation on <span class="id">${short(ids.sprinkler.id)}</span>`); log(`structural history: repair recorded → same identity, generation +1`); setTimeout(()=>sprMat.emissiveIntensity=.35, 2500); }
+  }
+  // drone beam target
+  if(beamMat.opacity>0){ const from=drone.position.clone(); const to=conf.getWorldPosition(new THREE.Vector3()); beam.geometry.setFromPoints([from,to]); }
+}
+
+// ---------- loop / resize ----------
+function resize(){ const w=stage.clientWidth, h=stage.clientHeight; renderer.setSize(w,h); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+window.addEventListener("resize", resize); resize();
+let prev=performance.now();
+function loop(now){ const dt=Math.min(0.25,(now-prev)/1000); prev=now; step(dt); renderer.render(scene,camera); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+window.__demoReady = { entities: R.all().length, robot: ids.robot.id, sprinkler: ids.sprinkler.id };
+window.__cam = () => ({ r:camR, phi:camPhi, theta:camTheta, orbit:autoOrbit, follow, tx:camTarget.x, ty:camTarget.y });
+</script>
+</body>
+</html>

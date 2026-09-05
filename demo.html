@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4D-ID Live Demo &mdash; name the world on a globe</title>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+<link rel="stylesheet" href="controls.css">
+<style>
+  :root{--bg:#0b0f14;--panel:#141c26;--line:#233140;--ink:#eaf1f8;--muted:#93a4b5;--a1:#4dd0c4;--a2:#7c8cff;--warm:#ff7a59;--font:'Helvetica Neue',Arial,sans-serif}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:var(--font);background:var(--bg);color:var(--ink)}
+  a{color:var(--a1);text-decoration:none}a:hover{text-decoration:underline}
+  .top{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line);background:#080b0f;position:relative;z-index:5}
+  .top .q{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--a1),var(--a2));display:grid;place-items:center;color:#04231f;font-weight:900}
+  .top b{font-weight:800;letter-spacing:.02em}
+  .top .muted{color:var(--muted);font-size:13px}
+  .top .right{margin-left:auto;display:flex;gap:16px;font-size:13.5px}
+  .sandbox{font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--warm);border:1px solid var(--warm);border-radius:6px;padding:3px 9px}
+  .layout{display:grid;grid-template-columns:380px 1fr;height:calc(100% - 47px)}
+  @media(max-width:820px){.layout{grid-template-columns:1fr;height:auto}#globe{height:60vh}}
+  aside{border-right:1px solid var(--line);overflow-y:auto;padding:18px;background:var(--bg)}
+  #globe{position:relative}
+  h1{font-size:19px;margin:0 0 4px}
+  .lede{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+  .card h3{margin:0 0 4px;font-size:14px}
+  .card .k{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--a2)}
+  .card p{margin:6px 0 10px;font-size:12.5px;color:var(--muted)}
+  input,button,select{font-family:inherit;font-size:13px}
+  input[type=text]{width:100%;background:#0a0e13;border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:9px 11px;margin-bottom:8px}
+  button{background:linear-gradient(135deg,var(--a1),var(--a2));color:#04231f;font-weight:800;border:none;border-radius:7px;padding:9px 14px;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600}
+  button:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:8px}
+  .out{background:#080b0f;border:1px solid var(--line);border-radius:8px;padding:11px;margin-top:10px;font-family:'SF Mono',Menlo,Consolas,monospace;font-size:11.5px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;word-break:break-all;color:#cfe0ee}
+  .idpill{color:var(--a1);font-weight:700}
+  .count{font-size:12px;color:var(--muted);margin-top:4px}
+  .foot{font-size:11px;color:#6b7885;margin-top:8px}
+  .steps{font-size:12px;color:var(--muted);margin:0;padding-left:16px}
+  .steps li{margin:3px 0}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="q">Q</span> <b>4D-ID</b> <span class="muted">live demo</span>
+  <span class="sandbox">Sandbox &middot; demo identities only</span>
+  <div class="right"><a href="demos.html">&larr; Demos</a><a href="https://x4d-id.exe.xyz/">Resolver</a></div>
+</div>
+
+<div class="layout">
+  <aside>
+    <h1>Name the world.</h1>
+    <p class="lede">Every point you drop is a real, valid 4D-ID: a discrete global grid cell plus a unique descriptor, minted in your browser. Nothing here touches the live namespace; identities are yours, in this tab.</p>
+
+    <div class="card">
+      <span class="k">Demo 1 &middot; address</span>
+      <h3>Address &rarr; identity</h3>
+      <p>Type any address. It is geocoded, anchored to its H3 cell, and given a persistent name you can resolve again.</p>
+      <input id="addr" type="text" placeholder="2058 Valley Rd, Costa Mesa CA 92647" value="2058 Valley Rd, Costa Mesa CA 92647">
+      <div class="row"><button id="mintBtn">Mint identity</button><button class="ghost" id="resolveBtn">Resolve again</button></div>
+      <div id="out1" class="out" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <span class="k">Demo 2 &middot; geodata</span>
+      <h3>Geodata &rarr; identities</h3>
+      <p>Drop a GeoJSON of points or polygons (buildings, assets, sensors). Each feature is minted as a named entity and appears on the globe. No file? Generate a sample block.</p>
+      <div class="row"><button id="sampleBtn">Generate sample block</button><button class="ghost" id="uploadBtn">Upload GeoJSON</button></div>
+      <input id="file" type="file" accept=".geojson,.json" style="display:none">
+      <div id="out2" class="out" style="display:none"></div>
+    </div>
+
+    <div class="card">
+      <span class="k">Demo 3 &middot; the grid</span>
+      <h3>Cells: the name is the address</h3>
+      <p>A discrete global grid cell is the name, the partition key, the route, and the level of detail at once. Toggle the grid and zoom: cells subdivide, and each shows how many identities it holds.</p>
+      <div class="row"><button class="ghost" id="gridBtn">Show H3 cells</button></div>
+      <div class="count" id="gridInfo"></div>
+    </div>
+
+    <div class="card">
+      <span class="k">World</span>
+      <h3>Your named world</h3>
+      <div class="count" id="count">0 identities minted</div>
+      <div class="row" style="margin-top:8px"><button class="ghost" id="flyBtn">Fit view</button><button class="ghost" id="clearBtn">Clear all</button></div>
+      <p class="foot">Click any point for its context envelope. Drag to pan, right-drag or ctrl-drag to tilt, scroll or +/&minus; to zoom, H for world view, N for north-up.</p>
+    </div>
+
+    <div class="card">
+      <span class="k">What just happened</span>
+      <ol class="steps">
+        <li>Address geocoded to lat/long.</li>
+        <li>Lat/long resolved to an H3 discrete-global-grid cell.</li>
+        <li>A 4D-ID minted: <code>4did:h3:&lt;cell&gt;:&lt;uuid&gt;</code>.</li>
+        <li>Address registered as an <code>identified_as</code> relation, so it resolves next time.</li>
+        <li>Anchored and plotted at global scale.</li>
+      </ol>
+      <p class="foot">This is exactly what the reference resolver does server-side. Here it runs in your browser so the namespace stays clean.</p>
+    </div>
+  </aside>
+
+  <div id="globe">
+    <div class="ctl">
+      <button id="zin" title="Zoom in">+</button>
+      <button id="zout" title="Zoom out">&minus;</button>
+      <div class="sep"></div>
+      <button id="vhome" title="World view"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
+      <button id="vfit" title="Fit to identities"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button id="vnorth" title="North up"><svg viewBox="0 0 24 24"><path d="M12 3l4 9-4-2-4 2z"/><path d="M12 12v9"/></svg></button>
+      <div class="sep"></div>
+      <button id="v2d" title="2D / 3D"><svg viewBox="0 0 24 24"><path d="M3 17l9 4 9-4M3 12l9 4 9-4M3 7l9 4 9-4-9-4z"/></svg></button>
+      <button id="vtilt" title="Tilt"><svg viewBox="0 0 24 24"><path d="M4 18L20 6"/><path d="M4 6v12h12"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<div id="ctx" class="out" style="display:none;position:absolute;right:18px;bottom:18px;max-width:420px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.5)"></div>
+
+<script src="h3-js.umd.js"></script>
+<script type="module">
+import * as R from "./4did-lite.js";
+const h3 = window.h3;
+
+// Cesium (no ion token needed: use open imagery)
+const Cesium = window.Cesium;
+Cesium.Ion.defaultAccessToken = undefined;
+const viewer = new Cesium.Viewer("globe", {
+  imageryProvider: new Cesium.UrlTemplateImageryProvider({
+    url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    maximumLevel: 19,
+    credit: "Imagery \u00A9 Esri, Maxar, Earthstar Geographics"
+  }),
+  baseLayerPicker:false, geocoder:false, homeButton:false, sceneModePicker:false,
+  navigationHelpButton:false, animation:false, timeline:false, fullscreenButton:false, infoBox:false, selectionIndicator:false
+});
+viewer.imageryLayers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+  url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+  maximumLevel: 19
+}));
+viewer.scene.globe.enableLighting = true;
+viewer.scene.backgroundColor = Cesium.Color.fromCssColorString("#0b0f14");
+
+const $ = id => document.getElementById(id);
+const entTable = new Map();
+
+// ---------- on-screen controls ----------
+function zoomBy(f){ const h=viewer.camera.positionCartographic.height; viewer.camera.zoomIn(h*(1-f)); }
+$("zin").onclick  = ()=>zoomBy(0.5);
+$("zout").onclick = ()=>{ const h=viewer.camera.positionCartographic.height; viewer.camera.zoomOut(h*1.0); };
+$("vhome").onclick = ()=>viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(-98,38,12e6), orientation:{ heading:0, pitch:-Cesium.Math.PI_OVER_TWO, roll:0 } });
+$("vfit").onclick = ()=>fly();
+$("vnorth").onclick = ()=>{ const c=viewer.camera; c.flyTo({ destination:c.position.clone(), orientation:{ heading:0, pitch:c.pitch, roll:0 }, duration:0.6 }); };
+let is2D=false;
+$("v2d").onclick = ()=>{ is2D=!is2D; $("v2d").classList.toggle("on",is2D); if(is2D) viewer.scene.morphTo2D(0.8); else viewer.scene.morphTo3D(0.8); };
+$("vtilt").onclick = ()=>{ const c=viewer.camera; const target = c.pitch < -1.2 ? -0.55 : -Cesium.Math.PI_OVER_TWO; c.flyTo({ destination:c.position.clone(), orientation:{ heading:c.heading, pitch:target, roll:0 }, duration:0.7 }); };
+window.addEventListener("keydown", e=>{ if(e.target.tagName==="INPUT") return;
+  if(e.key==="+"||e.key==="=") $("zin").click(); else if(e.key==="-") $("zout").click(); else if(e.key==="h"||e.key==="H") $("vhome").click(); else if(e.key==="n"||e.key==="N") $("vnorth").click(); }); // id -> cesium entity
+
+function addPoint(ent){
+  const e = viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(ent.lng, ent.lat),
+    point:{ pixelSize:11, color:Cesium.Color.fromCssColorString("#4dd0c4"), outlineColor:Cesium.Color.fromCssColorString("#04231f"), outlineWidth:2, heightReference:Cesium.HeightReference.CLAMP_TO_GROUND },
+    label:{ text: (ent.labels[0]&&ent.labels[0].text)||ent.class||"entity", font:"12px Helvetica", fillColor:Cesium.Color.WHITE, showBackground:true, backgroundColor:Cesium.Color.fromCssColorString("#141c26cc"), pixelOffset:new Cesium.Cartesian2(0,-18), scale:0.85, heightReference:Cesium.HeightReference.CLAMP_TO_GROUND },
+    id: ent.id
+  });
+  entTable.set(ent.id, e);
+}
+function refreshCount(){ $("count").textContent = R.all().length + " identities minted"; }
+function fly(){
+  const list=R.all(); if(!list.length) return;
+  if(list.length===1){ viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(list[0].lng,list[0].lat, 800) }); }
+  else { viewer.flyTo(viewer.entities); }
+}
+function loadExisting(){ R.all().forEach(addPoint); refreshCount(); if(R.all().length) fly(); }
+loadExisting();
+
+// click -> context envelope
+viewer.screenSpaceEventHandler.setInputAction(m=>{
+  const picked=viewer.scene.pick(m.position);
+  if(picked&&picked.id&&typeof picked.id.id==="string"){
+    const ctx=R.context(picked.id.id);
+    if(ctx){ $("ctx").style.display="block"; $("ctx").textContent=JSON.stringify(ctx,null,2); }
+  } else { $("ctx").style.display="none"; }
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+// Demo 1: address -> id
+$("mintBtn").onclick = async ()=>{
+  const addr=$("addr").value.trim(); if(!addr) return;
+  $("mintBtn").disabled=true; $("out1").style.display="block"; $("out1").textContent="Geocoding "+addr+" ...";
+  try{
+    const g=await R.geocode(addr);
+    if(!g){ $("out1").textContent="No geocoder match for that address."; $("mintBtn").disabled=false; return; }
+    const ent=R.createEntity({ lat:g.lat, lng:g.lng, label:addr.split(",")[0], cls:"built:property", address:addr });
+    addPoint(ent); refreshCount(); drawCells();
+    viewer.camera.flyTo({ destination:Cesium.Cartesian3.fromDegrees(ent.lng,ent.lat,900) });
+    $("out1").innerHTML="minted <span class='idpill'>"+ent.id+"</span>\n\n"+JSON.stringify(R.context(ent.id),null,2);
+  }catch(e){ $("out1").textContent="Error: "+e.message; }
+  $("mintBtn").disabled=false;
+};
+$("resolveBtn").onclick = ()=>{
+  const addr=$("addr").value.trim();
+  const r=R.resolve({ registry:"address", external_id:addr });
+  $("out1").style.display="block";
+  $("out1").innerHTML = r ? "resolved <span class='idpill'>"+r.id+"</span>\nlocator (zone): "+r.locator+"\nsnapshot: "+r.snapshot_id+"\n\n(same identity as when it was minted)"
+                          : "No identity registered for that address yet. Mint it first.";
+};
+
+// Demo 2: geodata -> ids
+function ingestGeoJSON(gj){
+  let n=0;
+  const feats = gj.type==="FeatureCollection" ? gj.features : [gj];
+  for(const f of feats){
+    const g=f.geometry; if(!g) continue;
+    let lat,lng;
+    if(g.type==="Point"){ [lng,lat]=g.coordinates; }
+    else if(g.type==="Polygon"){ const ring=g.coordinates[0]; let sx=0,sy=0; ring.forEach(c=>{sx+=c[0];sy+=c[1];}); lng=sx/ring.length; lat=sy/ring.length; }
+    else continue;
+    const props=f.properties||{};
+    const ent=R.createEntity({ lat, lng, label: props.name||props.label||("feature "+(n+1)), cls: props.class||"feature", address: props.address, apn: props.apn });
+    addPoint(ent); n++;
+  }
+  refreshCount(); if(n) fly(); drawCells();
+  return n;
+}
+$("uploadBtn").onclick = ()=> $("file").click();
+$("file").onchange = async (e)=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const gj=JSON.parse(await f.text()); const n=ingestGeoJSON(gj);
+    $("out2").style.display="block"; $("out2").textContent="Minted "+n+" identities from "+f.name+". Click any point for its envelope.";
+  }catch(err){ $("out2").style.display="block"; $("out2").textContent="Could not parse GeoJSON: "+err.message; }
+};
+$("sampleBtn").onclick = ()=>{
+  // a synthetic block of 6 buildings near a plausible location
+  const base=[33.7130,-117.9430]; const gj={type:"FeatureCollection",features:[]};
+  const names=["Warehouse A","Warehouse B","Office","Gatehouse","Tank 1","Loading Dock"];
+  for(let i=0;i<6;i++){ gj.features.push({type:"Feature",properties:{name:names[i],class:"built:structure"},geometry:{type:"Point",coordinates:[base[1]+(Math.random()-.5)*0.004, base[0]+(Math.random()-.5)*0.004]}}); }
+  const n=ingestGeoJSON(gj);
+  $("out2").style.display="block"; $("out2").textContent="Minted "+n+" identities from a generated block. Each is a named entity you can click.";
+};
+
+// ---- Demo 3: DGGS (H3) cell overlay, resolution tracks zoom, per-cell identity counts ----
+let gridOn=false; const cellEnts=new Map(); // cell -> cesium entity
+function resForHeight(h){ if(h>3e6) return 2; if(h>1e6) return 3; if(h>3e5) return 4; if(h>1e5) return 5; if(h>3e4) return 6; if(h>1e4) return 7; if(h>3e3) return 8; if(h>1e3) return 9; return 10; }
+function drawCells(){
+  for(const e of cellEnts.values()) viewer.entities.remove(e); cellEnts.clear();
+  if(!gridOn) { $("gridInfo").textContent=""; return; }
+  const h=viewer.camera.positionCartographic.height; const res=resForHeight(h);
+  const c=viewer.camera.positionCartographic; const lat=Cesium.Math.toDegrees(c.latitude), lng=Cesium.Math.toDegrees(c.longitude);
+  const center=h3.latLngToCell(lat,lng,res); const ring=h3.gridDisk(center, 4);
+  // count identities per cell at this resolution
+  const counts={}; for(const e of R.all()){ const k=h3.cellToParent(e.anchor.cell,res); counts[k]=(counts[k]||0)+1; }
+  for(const cell of ring){
+    const b=h3.cellToBoundary(cell); const flat=[]; b.forEach(([la,lo])=>flat.push(lo,la));
+    const n=counts[cell]||0;
+    const ent=viewer.entities.add({ polygon:{ hierarchy:Cesium.Cartesian3.fromDegreesArray(flat), material: n? Cesium.Color.fromCssColorString("#4dd0c4").withAlpha(0.18+Math.min(.5,n*.08)) : Cesium.Color.fromCssColorString("#7c8cff").withAlpha(0.06), outline:true, outlineColor:Cesium.Color.fromCssColorString("#4dd0c4").withAlpha(.6), height:0 },
+      position: Cesium.Cartesian3.fromDegrees(...(()=>{const [cla,clo]=h3.cellToLatLng(cell); return [clo,cla];})()),
+      label: n? { text:String(n), font:"13px Helvetica", fillColor:Cesium.Color.WHITE, showBackground:true, backgroundColor:Cesium.Color.fromCssColorString("#141c26cc"), scale:.9, heightReference:Cesium.HeightReference.CLAMP_TO_GROUND } : undefined });
+    cellEnts.set(cell,ent);
+  }
+  $("gridInfo").textContent="H3 resolution "+res+" · showing "+ring.length+" cells · "+Object.keys(counts).length+" hold identities";
+}
+$("gridBtn").onclick=()=>{ gridOn=!gridOn; $("gridBtn").textContent=gridOn?"Hide H3 cells":"Show H3 cells"; drawCells(); };
+let camTimer=null; viewer.camera.changed.addEventListener(()=>{ if(!gridOn) return; clearTimeout(camTimer); camTimer=setTimeout(drawCells,150); });
+viewer.camera.percentageChanged=0.05;
+
+$("flyBtn").onclick=fly;
+$("clearBtn").onclick=()=>{ R.clearAll(); viewer.entities.removeAll(); entTable.clear(); cellEnts.clear(); refreshCount(); $("ctx").style.display="none"; };
+</script>
+</body>
+</html>

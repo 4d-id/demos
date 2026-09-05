@@ -1,0 +1,9 @@
+/* Shared on-screen control cluster for the 3D demos */
+.ctl{position:absolute;right:14px;top:14px;display:flex;flex-direction:column;gap:6px;z-index:10}
+.ctl button{width:40px;height:40px;border-radius:9px;border:1px solid #233140;background:#080b0fdd;color:#eaf1f8;font-size:18px;font-weight:700;cursor:pointer;display:grid;place-items:center;padding:0;margin:0;backdrop-filter:blur(6px);transition:border-color .12s,background .12s}
+.ctl button:hover{border-color:#4dd0c4;background:#141c26}
+.ctl button.on{border-color:#4dd0c4;color:#4dd0c4}
+.ctl .sep{height:1px;background:#233140;margin:2px 4px}
+.ctl button[title]{position:relative}
+.ctl button[title]:hover::after{content:attr(title);position:absolute;right:48px;top:50%;transform:translateY(-50%);white-space:nowrap;background:#080b0f;border:1px solid #233140;color:#93a4b5;font-size:12px;font-weight:600;padding:5px 9px;border-radius:6px;pointer-events:none}
+.ctl svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}

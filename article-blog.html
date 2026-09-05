@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why a shared name is the missing layer in spatial computing | OGC (concept mockup)</title>
+<style>
+  :root{--ogc-red:#E03A3E;--ogc-red-dark:#B42A2E;--ink:#1f2933;--muted:#5b6670;--line:#e3e6e9;--bg:#fff;--bg-soft:#f5f6f8;--font:'Helvetica Neue',Arial,-apple-system,BlinkMacSystemFont,sans-serif;}
+  *{box-sizing:border-box}body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.7}
+  a{color:var(--ogc-red);text-decoration:none}a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px}
+  .mock{background:#111;color:#fff;font-size:12.5px;text-align:center;padding:7px 12px}.mock b{color:#ffd34d}
+  header.nav{border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:20}
+  .nav .wrap{max-width:1120px;display:flex;align-items:center;gap:28px;height:66px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:var(--ink)}
+  .logo .mark{width:32px;height:32px;border-radius:6px;background:var(--ogc-red);display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px}
+  nav.main{display:flex;gap:22px;margin-left:auto;font-size:14.5px;font-weight:600}nav.main a{color:var(--ink)}
+  .hero{background:var(--bg-soft);border-bottom:1px solid var(--line)}
+  .hero .wrap{padding:44px 24px 34px}
+  .k{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ogc-red)}
+  h1{font-size:34px;line-height:1.2;letter-spacing:-.02em;margin:12px 0 10px}
+  .byline{font-size:14px;color:var(--muted)}
+  article{padding:38px 0 10px}
+  article h2{font-size:24px;margin:34px 0 10px;letter-spacing:-.01em}
+  article p{margin:0 0 16px;font-size:17px}
+  article ul{padding-left:22px;margin:0 0 16px}article li{margin:8px 0;font-size:17px}
+  blockquote{border-left:4px solid var(--ogc-red);background:var(--bg-soft);margin:22px 0;padding:14px 20px;border-radius:0 6px 6px 6px;font-size:18px}
+  .lede{font-size:20px;color:#374049;margin-bottom:8px}
+  .back{display:inline-block;margin:26px 0 40px;font-weight:700}
+  footer{background:#12171c;color:#8f99a2;font-size:13px;padding:30px 0}
+  .fine{font-size:12px;color:#6b7580}
+</style>
+</head>
+<body>
+<div class="mock">CONCEPT MOCKUP &mdash; not affiliated with or endorsed by OGC. Illustrative article for a hypothetical 4D-ID listing. Hosted at x4d-id.exe.xyz.</div>
+<header class="nav"><div class="wrap">
+  <a class="logo" href="ogc.html"><span class="mark">OGC</span> Open Geospatial Consortium</a>
+  <nav class="main"><a href="ogc.html#overview">Overview</a><a href="ogc.html#downloads">Downloads</a><a href="ogc.html#faq">FAQ</a><a href="ogc.html#examples">Examples</a></nav>
+</div></header>
+<div class="hero"><div class="wrap">
+  <span class="k">Blog</span>
+  <h1>Why a shared name is the missing layer in spatial computing</h1>
+  <div class="byline">Guest perspective &middot; D. Lorenzini, Quantum Studio &middot; September 2026</div>
+</div></div>
+<div class="wrap"><article>
+<p class="lede">Spatial computing runs on frames that do not align. The standards that describe those frames are mature. What has been missing is a name for a thing that survives crossing between them.</p>
+
+<p>Consider a single door. A geographic information system knows it as a feature in a coordinate reference system. A robot knows it as a plane in the map it built this morning. A headset knows it as an anchor in a frame it invented when the user put it on. A reconstruction knows it as a cluster of points in a scan. A digital twin knows it as an element in a model. Five systems, five representations, and no way for any of them to say the one thing that matters: this is the same door.</p>
+
+<h2>Geometry is solved. Identity is not.</h2>
+<p>The geospatial community has spent decades making the geometry interoperable, and the work succeeded. GeoPose expresses pose. DGGS indexes the globe. Moving Features handles trajectories. Any two systems that speak these can exchange where something is. What they cannot exchange is which thing they are talking about, because there has never been a shared, persistent identifier for the thing itself.</p>
+
+<p>The cost of that gap is quiet but constant. Every pair of systems that must interoperate re-registers, re-projects, or re-anchors. Shared augmented reality drifts. Digital twins lose registration against their referents. Robot fleets disagree about where objects are. And every AI system built on top inherits the inconsistency, because it is reasoning over observations that were never tied to stable identities.</p>
+
+<blockquote>Identities are shared and global, but what you can see and say about them is yours.</blockquote>
+
+<h2>Two planes</h2>
+<p>The insight that makes a shared name safe is that identity and view are different planes. The identity plane is global and sparse: one name per thing, discovered through resolution, through the identifiers the world already has, and through re-identification. The view plane is private and rich: your layers, your disclosed precision, your attached content, all keyed to the shared names so your view stays consistent with everyone else about where things are, while differing on what you have added.</p>
+
+<p>This is the same separation that made the web work. Everyone resolves the same domain to the same server; what each person then sees, caches, and presents is their own. Nobody imagines DNS forces one shared website. A spatial identity layer does the same for physical and virtual things: it makes systems agree on which thing, and leaves everything else to them.</p>
+
+<h2>How two strangers agree</h2>
+<p>Because anyone can mint a name without permission, two systems can independently name the same door. A shared world works only if they converge. Three mechanisms make that happen, in order of how much weight they carry today: rendezvous through the identifiers the world already assigns, a parcel number, an asset tag, an IFC identifier, a place identifier; spatial dedupe within a grid zone; and re-identification, under which independently minted names for one thing are merged to a single name over time.</p>
+
+<h2>Why this belongs in the OGC baseline</h2>
+<p>An identity layer that names things needs to sit on top of the standards that place them, not beside them. 4D-ID resolves every identity to a DGGS cell, expresses every pose as GeoPose, and converts its history to Moving Features. It is not a new coordinate system and not a competitor to any existing standard. It is the missing layer that lets the ones we already have be used together, by name.</p>
+
+<a class="back" href="ogc.html">&larr; Back to the 4D-ID standard page</a>
+</article></div>
+<footer><div class="wrap"><div>Open Geospatial Consortium</div><div class="fine" style="margin-top:10px">CONCEPT MOCKUP for discussion. Not affiliated with, produced by, or endorsed by the Open Geospatial Consortium. &copy; 2026 Quantum Studio.</div></div></footer></body></html>
