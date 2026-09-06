@@ -1,5 +1,5 @@
 import * as R from './4did-lite.js';
-import {createStore,parseCoordinates,normalizeGeoJSON,EXAMPLES,sampleDistrict,MAX_FILE_BYTES} from './globe-model.mjs';
+import {createStore,parseCoordinates,normalizeGeoJSON,EXAMPLES,sampleDistrict,MAX_FILE_BYTES} from './globe-model.js?v=20260906c';
 const $=id=>document.getElementById(id);
 const C=window.Cesium;
 let storage;try{storage=window.localStorage;}catch{storage={getItem(){throw new Error('Storage blocked');}};}

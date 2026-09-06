@@ -28,3 +28,5 @@ Run the dependency-free data tests:
 ```sh
 node --test tests/globe-model.test.mjs
 ```
+
+The data model is maintained in `globe-model.mjs` (Node tests) and served as byte-identical `globe-model.js` (browser-compatible MIME). Keep these files identical when editing the model.
