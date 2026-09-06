@@ -40,15 +40,15 @@
   .steps{font-size:12px;color:var(--muted);margin:0;padding-left:16px}
   .steps li{margin:3px 0}
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="site.css?v=20260906a"><link rel="icon" type="image/svg+xml" href="assets/4did-mark.svg"></head>
+<body class="demo-page globe-page">
 <div class="top">
-  <span class="q">Q</span> <b>4D-ID</b> <span class="muted">live demo</span>
+  <a class="site-brand" href="home.html" aria-label="4D-ID home"><svg class="brand-mark" viewBox="0 0 36 40" fill="none" aria-hidden="true"><path d="M18 2 34 11v18L18 38 2 29V11Z" stroke="#4dd0c4" stroke-width="1.4"/><path d="m18 8 11 6v12l-11 6-11-6V14Z" stroke="#7c8cff"/><path d="m7 14 11 6 11-6M18 20v12M18 8v12" stroke="#4dd0c4"/><circle cx="18" cy="20" r="2.4" fill="#4dd0c4"/></svg><span>4D-ID</span><sup>™</sup></a> <span class="muted">live demo</span>
   <span class="sandbox">Sandbox &middot; demo identities only</span>
-  <div class="right"><a href="demos.html">&larr; Demos</a><a href="https://x4d-id.exe.xyz/">Resolver</a></div>
+  <div class="right"><a href="blog.html">Writing</a><a href="demos.html">&larr; Demos</a><a href="home.html#resolver">Resolver</a></div>
 </div>
 
-<div class="layout">
+<div class="layout" id="main-content">
   <aside>
     <h1>Name the world.</h1>
     <p class="lede">Every point you drop is a real, valid 4D-ID: a discrete global grid cell plus a unique descriptor, minted in your browser. Nothing here touches the live namespace; identities are yours, in this tab.</p>
@@ -118,6 +118,7 @@
 <div id="ctx" class="out" style="display:none;position:absolute;right:18px;bottom:18px;max-width:420px;z-index:10;box-shadow:0 10px 40px rgba(0,0,0,.5)"></div>
 
 <script src="h3-js.umd.js"></script>
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
 <script type="module">
 import * as R from "./4did-lite.js";
 const h3 = window.h3;
