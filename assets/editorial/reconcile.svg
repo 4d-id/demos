@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img" aria-labelledby="recon-title recon-desc" style="max-width:100%;height:auto">
+<title id="recon-title">Two observers reconcile to one identity</title>
+<desc id="recon-desc">A robot and a vision camera each mint a different identity for the same forklift. Their two identifier strands converge through an authenticated merge into a single surviving identity.</desc>
+<defs>
+  <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#111820"/><stop offset=".6" stop-color="#0b0f14"/><stop offset="1" stop-color="#0d1420"/></linearGradient>
+  <radialGradient id="tealAmb"><stop stop-color="#4dd0c4" stop-opacity=".14"/><stop offset="1" stop-color="#4dd0c4" stop-opacity="0"/></radialGradient>
+  <radialGradient id="periAmb"><stop stop-color="#7c8cff" stop-opacity=".14"/><stop offset="1" stop-color="#7c8cff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="greenAmb"><stop stop-color="#33d17a" stop-opacity=".12"/><stop offset="1" stop-color="#33d17a" stop-opacity="0"/></radialGradient>
+  <linearGradient id="forkBody" x2="0" y2="1"><stop stop-color="#ffc24a"/><stop offset="1" stop-color="#d98a12"/></linearGradient>
+  <linearGradient id="strandA" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#4dd0c4"/><stop offset="1" stop-color="#4dd0c4" stop-opacity=".25"/></linearGradient>
+  <linearGradient id="strandB" x1="1" y1="0" x2="0" y2="0"><stop stop-color="#7c8cff"/><stop offset="1" stop-color="#7c8cff" stop-opacity=".25"/></linearGradient>
+  <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="6"/></filter>
+  <filter id="bigGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="22"/></filter>
+  <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1.2" cy="1.2" r=".8" fill="#71818d" opacity=".2"/></pattern>
+</defs>
+<rect width="960" height="600" fill="url(#bg)"/>
+<rect width="960" height="600" fill="url(#dots)"/>
+<ellipse cx="300" cy="300" rx="240" ry="200" fill="url(#tealAmb)"/>
+<ellipse cx="660" cy="300" rx="240" ry="200" fill="url(#periAmb)"/>
+<ellipse cx="480" cy="300" rx="170" ry="150" fill="url(#greenAmb)"/>
+
+<!-- converging identity strands -->
+<path d="M232 330 C 340 330, 380 300, 480 300" fill="none" stroke="url(#strandA)" stroke-width="2.5" stroke-dasharray="2 7"/>
+<path d="M728 330 C 620 330, 580 300, 480 300" fill="none" stroke="url(#strandB)" stroke-width="2.5" stroke-dasharray="2 7"/>
+
+<!-- observer: robot A -->
+<g transform="translate(232,300)">
+  <rect x="-46" y="-30" width="92" height="60" rx="10" fill="#12242b" stroke="#4dd0c4" stroke-width="1.6"/>
+  <circle cx="-14" cy="0" r="11" fill="none" stroke="#4dd0c4" stroke-width="2.4"/>
+  <circle cx="-14" cy="0" r="3.5" fill="#4dd0c4"/>
+  <rect x="6" y="-12" width="26" height="24" rx="4" fill="none" stroke="#4dd0c4" stroke-width="1.6"/>
+  <text x="0" y="58" text-anchor="middle" font-family="monospace" font-size="17" fill="#4dd0c4">robot A</text>
+</g>
+<!-- observer: vision B -->
+<g transform="translate(728,300)">
+  <rect x="-46" y="-30" width="92" height="60" rx="10" fill="#1a1e33" stroke="#7c8cff" stroke-width="1.6"/>
+  <rect x="-24" y="-12" width="22" height="24" rx="3" fill="none" stroke="#7c8cff" stroke-width="1.8"/>
+  <circle cx="12" cy="0" r="11" fill="none" stroke="#7c8cff" stroke-width="2.4"/>
+  <circle cx="12" cy="0" r="3.5" fill="#7c8cff"/>
+  <text x="0" y="58" text-anchor="middle" font-family="monospace" font-size="17" fill="#7c8cff">vision B</text>
+</g>
+
+<!-- the one forklift -->
+<g transform="translate(480,300)">
+  <ellipse cx="0" cy="64" rx="86" ry="16" fill="#000" opacity=".38"/>
+  <rect x="-42" y="-14" width="80" height="58" rx="7" fill="url(#forkBody)"/>
+  <rect x="-30" y="-46" width="44" height="34" rx="5" fill="#2a3746"/>
+  <rect x="34" y="-40" width="8" height="72" rx="3" fill="#57636f"/>
+  <rect x="34" y="28" width="52" height="7" rx="3.5" fill="#cdd6df"/>
+  <rect x="18" y="28" width="16" height="7" rx="3.5" fill="#cdd6df"/>
+  <circle cx="-22" cy="48" r="15" fill="#10161c" stroke="#39434e" stroke-width="3"/>
+  <circle cx="20" cy="48" r="15" fill="#10161c" stroke="#39434e" stroke-width="3"/>
+  <circle cx="0" cy="-4" r="6" fill="#33d17a" filter="url(#glow)"/>
+</g>
+<circle cx="480" cy="300" r="92" fill="none" stroke="#33d17a" stroke-width="1.4" stroke-dasharray="3 8" opacity=".7"/>
+<circle cx="480" cy="300" r="92" fill="none" stroke="#33d17a" stroke-width="8" opacity=".12" filter="url(#bigGlow)"/>
+<text x="480" y="438" text-anchor="middle" font-family="monospace" font-size="17" fill="#33d17a">one identity</text>
+<text x="480" y="462" text-anchor="middle" font-family="monospace" font-size="12" fill="#8ea0ae">authenticated merge · surviving references</text>
+</svg>
