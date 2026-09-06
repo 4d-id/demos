@@ -48,10 +48,10 @@
   <p class="lede">Every container is a named entity, a child of the ship in the transform hierarchy. When the ship moves, does every container have to say so?</p>
 
   <div class="card"><span class="k">The comparison</span><h3>Two ways to publish motion</h3>
-    <p><b style="color:var(--warm)">Naive:</b> every container republishes its global pose each tick.<br><b style="color:var(--a1)">4D-ID:</b> children never republish when only the parent moved. Consumers compose position from the hierarchy.</p>
+    <p><b style="color:var(--warm)">Naive:</b> every container republishes its global pose each tick.<br><b style="color:var(--a1)">Hierarchy model:</b> children need not republish when only the parent moves; consumers compose their poses locally.</p>
     <div class="counters">
       <div class="ctr naive"><div class="n" id="nNaive">0</div><div class="l">records, naive</div><div class="bar"><i id="bNaive"></i></div></div>
-      <div class="ctr smart"><div class="n" id="nSmart">0</div><div class="l">records, 4D-ID</div><div class="bar"><i id="bSmart"></i></div></div>
+      <div class="ctr smart"><div class="n" id="nSmart">0</div><div class="l">parent-motion records</div><div class="bar"><i id="bSmart"></i></div></div>
     </div>
     <div class="ratio" id="ratio">ratio <b>&mdash;</b></div>
   </div>
@@ -60,11 +60,11 @@
     <button id="sail">&#9654; Sail the ship</button><button class="ghost" id="stop">Stop</button><button class="ghost" id="reset">Reset counters</button>
     <p style="margin-top:8px">Containers aboard: <b id="cntLbl">1,200</b></p>
     <input id="cnt" type="range" min="200" max="6000" step="200" value="1200">
-    <p>Each container carries a real 4D-ID minted in your browser. A crane lift is a <em>re-parent</em>: the container leaves the ship, keeps its name, and publishes once.</p>
+    <p>Each container receives a sandbox 4D-ID example in your browser. A crane lift is a <em>re-parent</em>: the container leaves the ship, keeps its name, and publishes once.</p>
     <button class="ghost" id="lift">Crane: lift one container</button>
   </div>
 
-  <div class="card"><span class="k">Why it matters</span><p style="margin:0">A bus with fifty passengers is one record. A container ship is one record. A fleet of ten thousand named things costs what it moves, not what it contains. This is <em>change locality</em>, and it is why identity scales to a planet.</p></div>
+  <div class="card"><span class="k">Why it matters</span><p style="margin:0">A bus with fifty passengers is one record. A container ship is one record. A fleet of ten thousand named things costs what it moves, not what it contains. This illustrates <em>change locality</em> in a hierarchy; it is not a claim about localization or transport.</p></div>
 </aside>
 <div id="stage"><div id="hud">drag to orbit &middot; scroll or buttons to zoom</div><div id="tick">tick 0</div>
 <div class="ctl" style="top:56px">
@@ -136,7 +136,7 @@ function buildContainers(n){
     d.position.set(-40+col*4.2, 7.2+layer*2.5, -6.5+r*2.6); d.updateMatrix(); inst.setMatrixAt(i,d.matrix);
     c.setHex(palette[(i*7)%palette.length]); inst.setColorAt(i,c); }
   inst.instanceMatrix.needsUpdate=true; if(inst.instanceColor) inst.instanceColor.needsUpdate=true;
-  // mint real ids (cheap; done once per slider change)
+  // create sandbox identity records (done once per slider change)
   containerIds=[]; for(let i=0;i<n;i++) containerIds.push(R.createEntity({lat:PORT.lat,lng:PORT.lng,label:"CTR-"+String(i).padStart(4,"0"),cls:"cargo:container",relations:[{type:"parent",target:shipId}]}).id);
 }
 let N=1200; buildContainers(N);
@@ -149,7 +149,7 @@ let naive=0, smart=0, tick=0, sailing=false, liftedOut=false;
 function fmt(n){ return n.toLocaleString(); }
 function upd(){ $("nNaive").textContent=fmt(naive); $("nSmart").textContent=fmt(smart);
   const mx=Math.max(naive,1); $("bNaive").style.width="100%"; $("bSmart").style.width=Math.max(1,100*smart/mx)+"%";
-  $("ratio").innerHTML = smart? `ratio <b>${Math.round(naive/smart).toLocaleString()}:1</b> fewer records with 4D-ID` : "ratio <b>&mdash;</b>";
+  $("ratio").innerHTML = smart? `ratio <b>${Math.round(naive/smart).toLocaleString()}:1</b> fewer parent-motion records in this model` : "ratio <b>&mdash;</b>";
   $("tick").textContent="tick "+tick; }
 $("cnt").oninput=e=>{ N=+e.target.value; $("cntLbl").textContent=fmt(N); buildContainers(N); };
 $("sail").onclick=()=>sailing=true; $("stop").onclick=()=>sailing=false;

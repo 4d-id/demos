@@ -41,18 +41,18 @@
 <div class="layout" id="main-content">
 <aside>
   <h1>Every thing here has a name.</h1>
-  <p class="lede">A robot works the floors while a drone surveys from above. The building, each floor, each room, the sprinkler heads, the robot, and the drone are all real minted 4D-IDs. Click anything.</p>
+  <p class="lede">A simulated robot and drone work inside a named hierarchy. Every scene entity has a sandbox identity record. Sensing, grounding, localization, and navigation are simulated or supplied by the scene; 4D-ID carries identity and event relationships.</p>
 
   <div class="card"><span class="k">Scenario</span><h3>Run the story</h3>
-    <p>Watch three ideas at once: physical entities moving inside a static hierarchy, a drone handing an observation to the robot by name, and a repair addressed to one specific fixture.</p>
+    <p>Watch a supplied observation attach to an identity, hand off by that identity, and address a repair to one specific fixture.</p>
     <button id="play">&#9654; Play scenario</button><button class="ghost" id="reset">Reset</button></div>
 
   <div class="card"><span class="k">The operable twin</span><h3>Request a repair</h3>
-    <p>"The sprinkler head in the 3rd-floor conference room, by the door." That sentence is one 4D-ID. Send the robot to it.</p>
+    <p>That natural-language description resolves to the fixture's 4D-ID. The robot's own planner and localizer decide how to reach it.</p>
     <button class="warm" id="repair">Dispatch repair</button></div>
 
   <div class="card"><span class="k">Hierarchy</span><h3>Move the whole building</h3>
-    <p>Everything inside moves with it, and only <em>one</em> record is published, because children never republish when only the parent moved.</p>
+    <p>In this hierarchy-only update model, moving the parent emits one parent update; consumers compose child poses locally.</p>
     <button class="ghost" id="shift">Shift building</button> <span id="recs" style="font-size:12px;color:var(--muted)">records published: 0</span></div>
 
   <div class="card"><span class="k">Event log</span><div class="log" id="log">ready.</div></div>
@@ -80,7 +80,7 @@
 import * as THREE from "three";
 import * as R from "./4did-lite.js";
 
-// ---------- identity: mint a real 4D-ID for every entity in the scene ----------
+// ---------- sandbox identity records for this simulated scene ----------
 const SITE = { lat: 33.7130, lng: -117.9430 }; // a plausible site; every entity anchors here
 const mint = (label, cls, extra={}) => R.createEntity({ lat:SITE.lat, lng:SITE.lng, label, cls, ...extra });
 R.clearAll();
@@ -265,9 +265,9 @@ function step(dt){
   // scenario beats
   if(!repairMode){
     if(phase===0 && robotT>0.05){ phase=1; log(pub(`${short(ids.robot.id)} moving (physical mode, threshold publish)`)); }
-    if(phase===1 && st>3){ phase=2; beamMat.opacity=.9; log(`<span class="ev">observation</span> ${short(ids.drone.id)} sees a door on floor 3`); }
-    if(phase===2 && st>5.5){ phase=3; log(`re-identify → matches <span class="id">${short(ids.rooms.conf3.id)}</span> (conference room). No new identity minted.`); log(`relation added: observed_by ${short(ids.drone.id)} → ${short(ids.rooms.conf3.id)}`); }
-    if(phase===3 && st>7.5){ phase=4; beamMat.opacity=0; log(`handoff by name → ${short(ids.robot.id)} now holds the same 4D-ID the drone observed`); }
+    if(phase===1 && st>3){ phase=2; beamMat.opacity=.9; log(`<span class="ev">supplied observation</span> ${short(ids.drone.id)} is associated with a door on floor 3`); }
+    if(phase===2 && st>5.5){ phase=3; log(`external re-identification proposes attachment to <span class="id">${short(ids.rooms.conf3.id)}</span> (conference room). No duplicate identity created.`); log(`relation added: observed_by ${short(ids.drone.id)} → ${short(ids.rooms.conf3.id)}`); }
+    if(phase===3 && st>7.5){ phase=4; beamMat.opacity=0; log(`after external grounding, handoff by identity → ${short(ids.robot.id)} receives the same 4D-ID`); }
     if(robotT>=1){ playing=false; log(`<span class="ok">loop complete.</span> Try "Dispatch repair" or "Shift building".`); }
   } else {
     if(robotT>=1){ playing=false; repairMode=false; sprMat.emissiveIntensity=1.2; log(`<span class="ok">arrived at fixture.</span> inspection posted as observation on <span class="id">${short(ids.sprinkler.id)}</span>`); log(`structural history: repair recorded → same identity, generation +1`); setTimeout(()=>sprMat.emissiveIntensity=.35, 2500); }

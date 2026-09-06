@@ -41,7 +41,7 @@ function save(db) { localStorage.setItem(LS_KEY, JSON.stringify(db)); }
 export function all() { return Object.values(load().entities); }
 export function clearAll() { localStorage.removeItem(LS_KEY); }
 
-// mint + register in the sandbox; returns the full entity record
+// create a sandbox record; returns the full entity record
 export function createEntity({ lat, lng, label, cls, address, apn, relations = [], vref = null }) {
   const db = load();
   const m = mintId(lat, lng, { vref });

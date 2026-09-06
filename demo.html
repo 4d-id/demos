@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0f14">
-  <meta name="description" content="Give a place a persistent spatial identity. Explore the globe, name a location, and resolve it again in a private browser sandbox.">
+  <meta name="description" content="Supply coordinates or an external geocoder result, create a sandbox spatial identity record, and resolve it again in this browser.">
   <title>Globe explorer — 4D-ID</title>
   <link rel="icon" href="assets/4did-mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css">
@@ -32,13 +32,13 @@
         <div class="gx-intro">
           <p class="gx-eyebrow"><span class="gx-live-dot" aria-hidden="true"></span> Globe sandbox <span class="gx-edition">01</span></p>
           <h1>Give a place<br>a name.</h1>
-          <p class="gx-lede">An address is a starting point.<br>Create a persistent identity that every system can share.</p>
+          <p class="gx-lede">An address is supplied grounding.<br>Create a sandbox identity record you can resolve again.</p>
         </div>
 
         <form class="gx-form" id="mintForm">
           <label for="addr">Find your place</label>
           <input id="addr" name="address" type="text" placeholder="An address or 37.7955, -122.3937" autocomplete="off" spellcheck="false" aria-describedby="lookupNotice searchStatus">
-          <button class="gx-button gx-primary" id="mintBtn" type="submit"><span>Create identity</span><span aria-hidden="true">↗</span></button>
+          <button class="gx-button gx-primary" id="mintBtn" type="submit"><span>Create sandbox identity</span><span aria-hidden="true">↗</span></button>
           <button class="gx-button gx-secondary" id="resolveBtn" type="button">Resolve again <span aria-hidden="true">↻</span></button>
           <p class="gx-status" id="searchStatus" role="status" aria-live="polite"></p>
           <p class="gx-notice" id="lookupNotice">Address searches use OpenStreetMap. Coordinates and examples need no lookup.</p>
@@ -54,7 +54,7 @@
         </div>
 
         <section class="gx-identity" id="identityPanel" aria-labelledby="identityName" hidden>
-          <div class="gx-identity-top"><span class="gx-small-label">Spatial identity</span><span class="gx-badge" id="identityState">Created</span></div>
+          <div class="gx-identity-top"><span class="gx-small-label">Sandbox identity</span><span class="gx-badge" id="identityState">Created</span></div>
           <h2 id="identityName"></h2>
           <div class="gx-id-row"><code id="identityId"></code><button class="gx-copy" id="copyId" type="button" aria-label="Copy identity">Copy</button></div>
           <dl class="gx-facts">
@@ -64,8 +64,8 @@
           </dl>
           <button class="gx-text-button" id="locateBtn" type="button">View this place on the globe ↗</button>
           <details class="gx-context" id="contextToggle">
-            <summary>View raw context <span aria-hidden="true">+</span></summary>
-            <pre id="contextJson" tabindex="0" aria-label="Raw identity context"></pre>
+            <summary>View identity context <span aria-hidden="true">+</span></summary>
+            <pre id="contextJson" tabindex="0" aria-label="Identity context JSON"></pre>
           </details>
         </section>
 
@@ -119,10 +119,10 @@
         </div>
         <div class="gx-action-tools" role="group" aria-label="Map layers and pin placement">
           <button id="gridBtn" class="gx-tool gx-tool-label" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>H3 grid</button>
-          <button id="pickBtn" class="gx-tool gx-tool-label gx-pin" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18.5 9.5c0 5-6.5 11-6.5 11s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0Z"/><circle cx="12" cy="9.5" r="2"/></svg>Drop a pin</button>
+          <button id="pickBtn" class="gx-tool gx-tool-label gx-pin" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18.5 9.5c0 5-6.5 11-6.5 11s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0Z"/><circle cx="12" cy="9.5" r="2"/></svg>Supply a point</button>
         </div>
       </div>
-      <p class="gx-map-guide">Drag to orbit <span aria-hidden="true">·</span> Scroll to zoom <span aria-hidden="true">·</span> Drop a pin to name any location</p>
+      <p class="gx-map-guide">Drag to orbit <span aria-hidden="true">·</span> Scroll to zoom <span aria-hidden="true">·</span> Supply coordinates for a sandbox identity</p>
       <p class="gx-grid-info" id="gridInfo" role="status" aria-live="polite">H3 grid off</p>
     </section>
   </main>

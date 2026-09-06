@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600" role="img" aria-labelledby="recon-title recon-desc" style="max-width:100%;height:auto">
 <title id="recon-title">Two observers reconcile to one identity</title>
-<desc id="recon-desc">A robot and a vision camera each mint a different identity for the same forklift. Their two identifier strands converge through an authenticated merge into a single surviving identity.</desc>
+<desc id="recon-desc">Two systems submit grounded observations of the same forklift. An external matcher supplies evidence, and an authorized merge records one surviving identity.</desc>
 <defs>
   <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#111820"/><stop offset=".6" stop-color="#0b0f14"/><stop offset="1" stop-color="#0d1420"/></linearGradient>
   <radialGradient id="tealAmb"><stop stop-color="#4dd0c4" stop-opacity=".14"/><stop offset="1" stop-color="#4dd0c4" stop-opacity="0"/></radialGradient>
@@ -55,5 +55,5 @@
 <circle cx="480" cy="300" r="92" fill="none" stroke="#33d17a" stroke-width="1.4" stroke-dasharray="3 8" opacity=".7"/>
 <circle cx="480" cy="300" r="92" fill="none" stroke="#33d17a" stroke-width="8" opacity=".12" filter="url(#bigGlow)"/>
 <text x="480" y="438" text-anchor="middle" font-family="monospace" font-size="17" fill="#33d17a">one identity</text>
-<text x="480" y="462" text-anchor="middle" font-family="monospace" font-size="12" fill="#8ea0ae">authenticated merge · surviving references</text>
+<text x="480" y="462" text-anchor="middle" font-family="monospace" font-size="12" fill="#8ea0ae">evidence supplied · authorized merge · surviving references</text>
 </svg>

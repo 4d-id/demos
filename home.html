@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>4D-ID &mdash; Universal Spatial Addressing</title>
-<meta name="description" content="One persistent name for every real or virtual thing. Live reference resolver, an interactive globe you can name the world on, and an open developer package.">
+<title>4D-ID &mdash; Persistent Spatial Identity</title>
+<meta name="description" content="A candidate open standard and reference resolver for persistent spatial identity across systems, representations, frames, and time.">
 
 <link rel="stylesheet" href="site.css?v=20260906a"><link rel="icon" href="assets/4did-mark.svg" type="image/svg+xml"></head>
 <body class="home-page">
@@ -12,50 +12,72 @@
 <a class="skip-link" href="#main-content">Skip to content</a><header class="site-header"><div class="header-inner"><a class="site-brand" href="home.html" aria-label="4D-ID home"><svg class="brand-mark" viewBox="0 0 36 40" fill="none" aria-hidden="true"><path d="M18 2 34 11v18L18 38 2 29V11Z" stroke="#4dd0c4" stroke-width="1.4"/><path d="m18 8 11 6v12l-11 6-11-6V14Z" stroke="#7c8cff"/><path d="m7 14 11 6 11-6M18 20v12M18 8v12" stroke="#4dd0c4"/><circle cx="18" cy="20" r="2.4" fill="#4dd0c4"/></svg><span>4D-ID</span><sup>™</sup></a><nav class="site-nav" aria-label="Main navigation"><a href="home.html" aria-current="page">Home</a><a href="blog.html">Writing</a><a href="demos.html">Demos</a><a href="home.html#resolver">Resolver</a><a class="nav-cta" href="demos.html">Try it live <span aria-hidden="true">↗</span></a></nav></div></header>
 
 <main id="main-content"><div class="hero"><div class="wrap"><div class="hero-copy">
-  <span class="kick">4D-ID™ = Universal spatial addressing</span>
+  <span class="kick">4D-ID™ = Persistent spatial identity</span>
   <h1>One name for<br><span class="g">everything real.</span></h1>
-  <p class="sub">Every object, place, robot, and virtual thing gets one persistent identity, so every system can point at the same thing without agreeing on anything else. Self-minting, permanent, and yours to resolve, the way a web address is.</p>
+  <p class="sub">Maps, robots, XR systems, scans, and digital twins create different representations of the same world. Once an entity is grounded, 4D-ID gives it a persistent identity that survives different coordinate systems, representations, vendors, and time.</p>
   <div class="cta">
     <a class="btn" href="demos.html">See the demos &rarr;</a>
     <a class="btn ghost" href="#resolver">See the live resolver</a>
-    <span class="live"><span class="dot"></span> reference resolver v2.3 &middot; 15/15 schema conformance</span>
+    <span class="live"><span class="dot"></span> reference resolver v2.3 &middot; 15 schema-level checks passing &middot; functional conformance continues</span>
   </div></div><figure class="hero-art"><img src="assets/editorial/why-shared-name.svg" alt="One persistent identity connects different views of the same thing." width="960" height="600" fetchpriority="high"><figcaption>Different systems. The same thing.</figcaption></figure>
 </div></div>
 
-<section><div class="wrap"><span class="section-label">01 / The idea</span>
+<section><div class="wrap"><span class="section-label">01 / The problem</span>
   <h2>Shared identity, not another coordinate system</h2>
-  <p class="section-lede">Maps, headsets, robots, game engines, and 3D scans each track space their own way, and none of them agree. The fix isn’t a new coordinate system on top. It’s a shared name, so all of them can point at the same thing while keeping their own coordinates. Four ideas carry it: identity, hierarchy, pose, time.</p>
+  <p class="section-lede">Grounding determines what thing an observation refers to. Localization determines where it is. 4D-ID preserves which thing it is across systems, representations, frames, and time. Different systems keep their own maps, coordinates, and internal IDs while resolving the same persistent entity.</p>
   <div class="grid3">
-    <div class="card"><span class="k">Identity</span><h3>One persistent name</h3><p>An opaque, ~48-character 4D-ID for a thing, unchanged as it moves, ages, or is seen by another system.</p></div>
-    <div class="card"><span class="k">Hierarchy &amp; pose</span><h3>Anchored in the world</h3><p>A discrete global grid cell is the name, partition key, route, and query predicate at once. Pose is GeoPose-compatible.</p></div>
-    <div class="card"><span class="k">Time</span><h3>Honest about change</h3><p>Source, publish, and receive time with an uncertainty bound. Staleness is marked, never hidden.</p></div>
+    <div class="card"><span class="k">Identity</span><h3>One persistent referent</h3><p>A grounded physical or virtual entity keeps one identity while pose, state, representations, and observations change.</p></div>
+    <div class="card"><span class="k">Resolve &amp; reconcile</span><h3>Find the same thing again</h3><p>Resolve aliases across systems; preserve relationships, representations, provenance, history, and authorized merge or split corrections.</p></div>
+    <div class="card"><span class="k">Interoperate</span><h3>Native systems stay native</h3><p>ROS frames, Niantic anchors, OpenXR entities, scan segments, and BIM objects remain native and can attach to the same 4D-ID.</p></div>
   </div>
-  <div class="callout"><strong>Identities are shared and global, but what you can see and say about them is yours.</strong></div>
+  <div class="callout"><strong>4D-ID does not replace perception or localization. It gives the entities those systems observe a shared identity they can resolve.</strong><p>A UUID provides uniqueness. 4D-ID adds standardized aliases, resolution, hierarchy, representations, state and time, provenance, merge/split lifecycle, and historical continuity.</p></div>
+</div></section>
+<section id="grounding" class="grounding-section"><div class="wrap"><span class="section-label">02 / Grounding</span>
+  <h2>Ground first. Identify second.</h2>
+  <p class="section-lede">4D-ID starts where perception and existing data systems leave off. An entity may be grounded from a BIM, GIS, CMMS, MLS, device ID, or asset database; from detection, segmentation, tracking, or re-identification; from human annotation; or from a grounding service such as SEGS.</p>
+  <div class="identity-flow" aria-label="Observe, ground, identify, resolve, interoperate">
+    <div><span>01</span><strong>Observe</strong><p>Scans, cameras, BIM, GIS, robots, registries, or people supply evidence.</p></div>
+    <div><span>02</span><strong>Ground</strong><p>An upstream process determines the referent and supplies spatial context.</p></div>
+    <div><span>03</span><strong>Identify</strong><p>Resolve an existing entity first; mint only when no acceptable match exists.</p></div>
+    <div><span>04</span><strong>Resolve</strong><p>Look up the identity, aliases, state, relations, representations, and history.</p></div>
+    <div><span>05</span><strong>Interoperate</strong><p>Robots, XR, AI, twins, and maps share the referent, not one coordinate frame.</p></div>
+  </div>
+  <div class="grounding-grid">
+    <div class="grounding-example"><span class="k">Observation ≠ identity</span><pre>Niantic anchor_923
+ROS track_47
+XGRIDS segment_108
+BIM GUID_882
+        ↓ grounding / reconciliation
+4did:...DOOR17</pre><p>Detections, tracks, anchors, and scan segments are evidence. They remain native to their systems and can become aliases or supporting observations for one grounded entity.</p></div>
+    <div class="segs"><span class="k">Adjacent service</span><h3>Spatial Entity Grounding Service (SEGS)</h3><p>SEGS turns observations into grounded entity hypotheses: detect or segment → classify → track or re-identify → localize in 3D → match known entities → mint or resolve a candidate 4D-ID.</p><p>SEGS is an implementation pattern adjacent to 4D-ID, not part of the core candidate standard.</p></div>
+  </div>
+  <div class="boundary"><strong>4D-ID does:</strong> persistent identity, aliases, resolution, relationships, representations, state and time, provenance, merge/split lifecycle, history, and cross-system reconciliation.<br><strong>4D-ID does not:</strong> object detection, segmentation, SLAM, VPS, localization, geometric registration, rendering, robot navigation, or grasp planning.</div>
 </div></section>
 
-<section id="try"><div class="wrap"><span class="section-label">02 / Explore it</span>
+<section id="try"><div class="wrap"><span class="section-label">03 / Explore it</span>
   <h2>Try it, right now</h2>
-  <p class="section-lede">These run in your browser against a faithful in-browser build of the resolver. Everything you mint is a real, valid 4D-ID, kept in a sandbox so the live namespace stays clean.</p>
+  <p class="section-lede">These isolated browser demos illustrate the identity and resolution model. Records created here are sandbox examples and do not enter the live resolver namespace.</p>
   <div class="try">
+    <a class="try-card" href="reconcile.html"><span class="n">Demo 1 &middot; reconciliation</span><h3>Two systems, one forklift</h3><p>See how independently created identities converge once an external matcher supplies evidence and an authorized actor records the merge.</p><span class="go">Reconcile it &rarr;</span></a>
     <a class="try-card" href="demo.html">
-      <span class="n">Demo 1 &middot; global</span><h3>Address &rarr; identity, on a globe</h3>
-      <p>Type an address. Watch it geocode, anchor to a global-grid cell, and become a persistent name you can resolve again.</p>
+      <span class="n">Demo 2 &middot; global</span><h3>Address &rarr; identity, on a globe</h3>
+      <p>Use supplied coordinates or an external geocoder result as grounding, create a sandbox identity, and resolve it again.</p>
       <span class="go">Open the globe &rarr;</span>
     </a>
     <a class="try-card" href="building.html">
-      <span class="n">Demo 2 &middot; showpiece</span><h3>A building that can be worked</h3>
-      <p>A robot and a drone in a named building. Watch an observation hand off by name, then dispatch a repair to one sprinkler head.</p>
+      <span class="n">Demo 3 &middot; showpiece</span><h3>A building that can be worked</h3>
+      <p>A simulated robot and drone exchange an already-grounded observation by identity; native planning and localization remain outside 4D-ID.</p>
       <span class="go">Enter the building &rarr;</span>
     </a>
     <a class="try-card" href="ship.html">
-      <span class="n">Demo 3 &middot; scale</span><h3>One record, ten thousand containers</h3>
+      <span class="n">Demo 4 &middot; scale</span><h3>One record, ten thousand containers</h3>
       <p>Sail a ship of named containers and count the records. Naive versus hierarchy, live.</p>
       <span class="go">Sail the ship &rarr;</span>
     </a>
   </div>
 </div></section>
 
-<section id="resolver"><div class="wrap"><span class="section-label">03 / The developer surface</span>
+<section id="resolver"><div class="wrap"><span class="section-label">04 / The developer surface</span>
   <h2>The live reference resolver</h2>
   <p class="section-lede">Behind this site runs a real 4D-ID resolver you can query right now. It is read-only: you can look identities up, but you cannot create them here, so the try-it demos above create identities in your own browser instead. Below are the calls the resolver answers.</p>
 
@@ -68,7 +90,7 @@ curl -fsS "$BASE/resolve?registry=asset.register&amp;external_id=TB-WH-01"
 curl -fsS "$BASE/entity/<span class="s">&lt;4did&gt;</span>/context"
 <span class="c"># deterministic state snapshot</span>
 curl -fsS $BASE/snapshot</pre>
-  <p style="font-size:13.5px;color:var(--muted)">Note: <code>resolve</code> is a lookup, not a mint. It finds an identity that was already registered. The sample facility registers <code>asset.register / TB-WH-01</code>; to look up your own address, mint it first in the <a href="demo.html">globe demo</a>.</p>
+  <p style="font-size:13.5px;color:var(--muted)">Note: <code>resolve</code> is a lookup, not a mint. It finds an identity already registered in that resolver. The sample facility registers <code>asset.register / TB-WH-01</code>; the <a href="demo.html">globe demo</a> creates separate browser-only sandbox records.</p>
 
   <h3 style="font-size:16px;margin:26px 0 8px">REST surface</h3>
   <div class="table-scroll" tabindex="0" role="region" aria-label="Resolver REST surface"><table>
@@ -87,20 +109,20 @@ curl -fsS $BASE/snapshot</pre>
     </tbody>
   </table></div>
   <div style="margin-top:14px">
-    <span class="pill ok">GET read-only</span><span class="pill">POST /ingest blocked</span><span class="pill">JSON Schema 2020-12</span><span class="pill">OpenAPI 3.1</span><span class="pill ok">Apache-2.0</span>
+    <span class="pill ok">GET read-only</span><span class="pill">POST /ingest blocked</span><span class="pill">JSON Schema 2020-12</span><span class="pill">OpenAPI 3.1</span><span class="pill ok">15 schema-level checks passing</span>
   </div>
 </div></section>
 
-<section><div class="wrap"><span class="section-label">04 / Built to connect</span>
+<section><div class="wrap"><span class="section-label">05 / Built to connect</span>
   <h2>Built on what already works</h2>
-  <p class="section-lede">4D-ID is an identity layer over the standards the world already uses. It composes with them; it replaces none.</p>
+  <p class="section-lede">4D-ID is a candidate identity layer that composes with existing standards and native systems; it replaces none. Adapters translate native identifiers and grounded records into 4D-ID references only where implementation code exists.</p>
   <p style="font-size:15px;color:var(--ink)">OGC GeoPose &amp; DGGS &middot; ISO 8601 &middot; ROS tf2 &middot; VDA 5050 &middot; ETSI Local Dynamic Map &middot; OpenXR &middot; glTF &middot; MCP</p>
   <p style="margin-top:20px">
     <a class="btn ghost" href="blog.html">Why a shared name is the missing layer &rarr;</a>
   </p>
 </div></section>
 
-<section><div class="wrap writing-preview"><a href="blog.html" aria-label="Explore the writing section"><img src="assets/editorial/what-it-enables.svg" alt="An addressable world across connected spatial layers." width="960" height="600" loading="lazy"></a><div><span class="section-label">05 / Field notes</span><h2>The ideas behind<br>the identity.</h2><p class="section-lede">Eight essays on why a shared name matters, what it makes possible for AI, and how to put it to work.</p><a class="btn ghost" href="blog.html">Explore the writing ↗</a></div></div></section></main><footer class="site-footer"><div class="wrap"><div class="footer-top"><div><a class="site-brand" href="home.html" aria-label="4D-ID home"><svg class="brand-mark" viewBox="0 0 36 40" fill="none" aria-hidden="true"><path d="M18 2 34 11v18L18 38 2 29V11Z" stroke="#4dd0c4" stroke-width="1.4"/><path d="m18 8 11 6v12l-11 6-11-6V14Z" stroke="#7c8cff"/><path d="m7 14 11 6 11-6M18 20v12M18 8v12" stroke="#4dd0c4"/><circle cx="18" cy="20" r="2.4" fill="#4dd0c4"/></svg><span>4D-ID</span></a><p>One persistent name for everything real.<br>Unified Spatiotemporal Identity for Shared Reality.</p></div><nav class="footer-links" aria-label="Footer"><a href="blog.html">Writing</a><a href="demos.html">Live demos</a><a href="home.html#resolver">Resolver</a><a href="https://quantumstudio.exe.xyz/">Quantum Studio ↗</a></nav></div><div class="footer-bottom"><span>© 2026 4D-ID · An open standard for spatial identity.</span><span>A Quantum Studio project.</span></div></div></footer>
+<section><div class="wrap writing-preview"><a href="blog.html" aria-label="Explore the writing section"><img src="assets/editorial/what-it-enables.svg" alt="An addressable world across connected spatial layers." width="960" height="600" loading="lazy"></a><div><span class="section-label">06 / Field notes</span><h2>The ideas behind<br>the identity.</h2><p class="section-lede">Eight essays on grounding, shared identity, resolution, AI, and practical adoption.</p><a class="btn ghost" href="blog.html">Explore the writing ↗</a></div></div></section></main><footer class="site-footer"><div class="wrap"><div class="footer-top"><div><a class="site-brand" href="home.html" aria-label="4D-ID home"><svg class="brand-mark" viewBox="0 0 36 40" fill="none" aria-hidden="true"><path d="M18 2 34 11v18L18 38 2 29V11Z" stroke="#4dd0c4" stroke-width="1.4"/><path d="m18 8 11 6v12l-11 6-11-6V14Z" stroke="#7c8cff"/><path d="m7 14 11 6 11-6M18 20v12M18 8v12" stroke="#4dd0c4"/><circle cx="18" cy="20" r="2.4" fill="#4dd0c4"/></svg><span>4D-ID</span></a><p>One persistent name for everything real.<br>Open specification for persistent spatial identity.</p></div><nav class="footer-links" aria-label="Footer"><a href="blog.html">Writing</a><a href="demos.html">Live demos</a><a href="home.html#resolver">Resolver</a><a href="https://quantumstudio.exe.xyz/">Quantum Studio ↗</a></nav></div><div class="footer-bottom"><span>© 2026 4D-ID · A candidate open standard for spatial identity.</span><span>A Quantum Studio project.</span></div></div></footer>
 
 </body>
 </html>

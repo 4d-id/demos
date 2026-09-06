@@ -39,23 +39,23 @@
   <div class="right"><a href="blog.html">Writing</a><a href="demos.html">&larr; Demos</a><a href="/">Home</a></div></div>
 <div class="layout" id="main-content">
 <aside>
-  <h1>The hard problem: same thing, two names.</h1>
-  <p class="lede">A robot and a vision system each see the same forklift and each mint their own 4D-ID. Nobody told them about each other. Watch them reconcile to one identity, with provenance, confidence, an authenticated merge, and surviving references.</p>
+  <h1>After observation: one forklift, two candidate identities.</h1>
+  <p class="lede">Two upstream systems submit grounded observations of one forklift. An external matcher supplies evidence for a possible correspondence; an authorized actor then records the merge. 4D-ID preserves the candidate, provenance, redirect, and history.</p>
 
-  <div class="card"><span class="k">Step 1</span><h3>Two independent sightings</h3>
-    <p>Each system mints a name for what it sees. Two valid identities now exist for one real forklift.</p>
-    <button id="mintA">Robot A sees it</button><button id="mintB">Vision B sees it</button>
+  <div class="card"><span class="k">Step 1</span><h3>Two supplied observations</h3>
+    <p>Each upstream system submits an observation and creates a candidate identity record. Sensing, grounding, and localization happened before this demo.</p>
+    <button id="mintA">Submit Robot A observation</button><button id="mintB">Submit Vision B observation</button>
     <div id="ids"></div>
   </div>
 
-  <div class="card"><span class="k">Step 2</span><h3>Propose a match (automation proposes)</h3>
-    <p>A matcher notices both carry asset tag FORKLIFT-42, sit 0.1 m apart, and classify as forklift. It proposes A ≡ B with a confidence, but cannot merge on its own.</p>
+  <div class="card"><span class="k">Step 2</span><h3>Record a proposed match</h3>
+    <p>An external matcher supplies synthetic evidence: shared asset tag, proximity, and class. It proposes A ≡ B; 4D-ID records the candidate but does not perform the matching.</p>
     <button id="propose" disabled>Propose A ≡ B</button>
     <div id="cand"></div>
   </div>
 
-  <div class="card"><span class="k">Step 3</span><h3>Authority promotes it (authority promotes)</h3>
-    <p>Warehouse ops, an authenticated authority, promotes the candidate. The earlier-genesis identity survives; the other redirects and keeps its history.</p>
+  <div class="card"><span class="k">Step 3</span><h3>Authority records the merge</h3>
+    <p>Warehouse operations, acting as the authorized authority in this walkthrough, promotes the candidate. The earlier-genesis identity survives; the other redirects and keeps its history.</p>
     <button id="merge" disabled>Authority: merge</button>
   </div>
 
@@ -65,6 +65,7 @@
     <div id="resolveOut"></div>
   </div>
 
+  <div class="card"><span class="k">Boundary</span><p><strong>Observation ≠ identity.</strong> The demo begins with supplied evidence. 4D-ID does not detect, segment, localize, or re-identify the forklift.</p></div>
   <div class="card"><span class="k">Event log</span><div class="log" id="log">ready.</div></div>
   <div class="card"><button class="ghost" id="reset">Reset</button></div>
 </aside>
@@ -152,23 +153,23 @@ function renderIds(){ const box=$("ids"); box.innerHTML="";
 $("mintA").onclick=()=>{ idA=mint(new Date(Date.now()-60000)); // A a minute earlier -> A survives
   R.put({id:idA,status:"active",producer:"robot:A",provenance:{sensor:"robotA:lidar",confidence:.9},relations:[{type:"identified_as",registry:"asset.tag",external_id:"FORKLIFT-42"}]});
   obsA.visible=true; labelA=label("Robot A · "+short(idA),"#4dd0c4"); labelA.position.set(-11,2.4,-7); scene.add(labelA);
-  log(`<span class="ev">Robot A</span> mints <span class="id">${idA.slice(0,40)}…</span>  <span class="conf">conf 0.90</span>`);
+  log(`<span class="ev">Robot A</span> submits observation; candidate identity created <span class="id">${idA.slice(0,40)}…</span>  <span class="conf">source conf 0.90</span>`);
   $("mintA").disabled=true; renderIds(); if(idA&&idB)$("propose").disabled=false; };
 $("mintB").onclick=()=>{ idB=mint(new Date());
   R.put({id:idB,status:"active",producer:"vision:B",provenance:{sensor:"cameraB:cnn",confidence:.82},relations:[{type:"identified_as",registry:"asset.tag",external_id:"FORKLIFT-42"}]});
   obsB.visible=true; labelB=label("Vision B · "+short(idB),"#7c8cff"); labelB.position.set(11,2.4,-8); scene.add(labelB);
-  log(`<span class="ev">Vision B</span> mints <span class="id">${idB.slice(0,40)}…</span>  <span class="conf">conf 0.82</span>`);
+  log(`<span class="ev">Vision B</span> submits observation; candidate identity created <span class="id">${idB.slice(0,40)}…</span>  <span class="conf">source conf 0.82</span>`);
   log(`two identities now exist for one real forklift.`);
   $("mintB").disabled=true; renderIds(); if(idA&&idB)$("propose").disabled=false; };
-$("propose").onclick=()=>{ const c=R.propose(idA,idB,{confidence:.94,by:"reconciler:spatial",method:"tag+iou+class",evidence:["same asset.tag FORKLIFT-42","0.1 m apart","class=forklift"]});
+$("propose").onclick=()=>{ const c=R.propose(idA,idB,{confidence:.94,by:"external matcher",method:"tag+proximity+class",evidence:["same asset.tag FORKLIFT-42","0.1 m apart","class=forklift"]});
   $("cand").innerHTML=`<div class="kv"><b>candidate</b> A ≡ B · <span class="conf">confidence ${c.confidence}</span></div><div class="kv">by ${c.by} · ${c.method}</div><div class="kv">${c.evidence.join(" · ")}</div>`;
-  log(`<span class="ev">match proposed</span> A ≡ B  <span class="conf">conf 0.94</span>  (${c.method})`);
+  log(`<span class="ev">external matcher proposes</span> A ≡ B  <span class="conf">conf 0.94</span>  (${c.method})`);
   log(`automation proposes; it cannot merge on its own.`);
   $("propose").disabled=true; $("merge").disabled=false; };
-$("merge").onclick=()=>{ const res=R.merge(idA,idB,"warehouse-ops:signed"); merged=res.survivor;
+$("merge").onclick=()=>{ const res=R.merge(idA,idB,"warehouse-ops:authorized"); merged=res.survivor;
   // fade the loser observer, draw a link, collapse labels to one
   scene.remove(labelA); scene.remove(labelB); if(labelM)scene.remove(labelM); labelM=label("forklift · "+short(merged),"#33d17a"); labelM.position.set(0,5.5,0); scene.add(labelM);
-  log(`<span class="auth">warehouse-ops:signed</span> promotes the match → <span class="ok">merge</span>`);
+  log(`<span class="auth">warehouse-ops authority</span> promotes the candidate → <span class="ok">merge recorded</span>`);
   log(`survivor = earlier genesis = <span class="id">${res.survivor.slice(0,40)}…</span>`);
   log(`<span class="id">${res.merged.slice(0,28)}…</span> → merged, redirects, keeps history`);
   $("merge").disabled=true; renderIds(); ["resolveLoser","resolveTag","move"].forEach(i=>$(i).disabled=false); };
