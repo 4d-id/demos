@@ -27,6 +27,11 @@ Run the dependency-free data tests:
 
 ```sh
 node --test tests/globe-model.test.mjs
+node --test tests/identity-model.test.mjs
 ```
 
-The data model is maintained in `globe-model.mjs` (Node tests) and served as byte-identical `globe-model.js` (browser-compatible MIME). Keep these files identical when editing the model.
+The globe model has 59 tests and the local identity inspector model has 12 tests.
+
+The data model is maintained in `globe-model.mjs` (Node tests) and served as byte-identical `globe-model.js` (browser-compatible MIME). Keep these files identical when editing the model. The identity inspector follows the same `.mjs` source / `.js` browser-copy rule.
+
+The November 2026 mirror adds the 2.4 working-draft articles, the identity inspector, and links to the implemented reference-only Overture GERS bridge. The demos and inspector remain isolated browser tools; the bridge repository is the reference implementation, not production hardening or an Overture integration endorsement.

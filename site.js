@@ -8,9 +8,9 @@
     const apply = (category) => {
       if (!filters.some(button => button.dataset.filter === category)) category = 'all';
       filters.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === category)));
-      cards.forEach((card, index) => {
+      cards.forEach(card => {
         card.hidden = category !== 'all' && card.dataset.category !== category;
-        card.classList.toggle('post-featured', category === 'all' && index === 0);
+        card.classList.toggle('post-featured', category === 'all' && card.dataset.featured === 'true');
       });
       const visible = cards.filter(card => !card.hidden).length;
       count.textContent = `${visible} ${visible === 1 ? 'article' : 'articles'}`;

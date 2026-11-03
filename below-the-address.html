@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Below the address | 4D-ID</title><meta name="description" content="Addresses, parcels, and place identifiers stop at the door. A look at what it takes to name the operational things inside and around an addressed place."><meta name="theme-color" content="#0b0f14"><link rel="icon" type="image/svg+xml" href="assets/4did-mark.svg"><link rel="stylesheet" href="site.css?v=20261103a"><link rel="stylesheet" href="blog.css?v=20261103a"><script src="site.js?v=20261103a" defer></script></head><body class="article-page"><div class="reading-progress" aria-hidden="true"></div><a class="skip-link" href="#main-content">Skip to content</a><header class="site-header"><div class="header-inner"><a class="site-brand" href="home.html" aria-label="4D-ID home"><svg class="brand-mark" viewBox="0 0 36 40" fill="none" aria-hidden="true"><path d="M18 2 34 11v18L18 38 2 29V11Z" stroke="#4dd0c4" stroke-width="1.4"/><path d="m18 8 11 6v12l-11 6-11-6V14Z" stroke="#7c8cff"/><path d="m7 14 11 6 11-6M18 20v12M18 8v12" stroke="#4dd0c4"/><circle cx="18" cy="20" r="2.4" fill="#4dd0c4"/></svg><span>4D-ID</span><sup>™</sup></a><nav class="site-nav" aria-label="Main navigation"><a href="home.html">Home</a><a href="blog.html" aria-current="page">Writing</a><a href="demos.html">Demos</a><a href="home.html#resolver">Resolver</a><a class="nav-cta" href="demos.html">Try it live <span aria-hidden="true">↗</span></a></nav></div></header><main id="main-content"><div class="hero"><div class="wrap"><a class="article-breadcrumb" href="blog.html">← ALL WRITING <span>/ FIELD NOTE 11</span></a><span class="kick">Design logic</span><h1>Below the address</h1><div class="article-meta"><div class="byline">Quantum Studio · November 2026 · 6 min read</div><div class="keywords"><span class="keyword">Addressing</span><span class="keyword">Hierarchy</span></div></div></div><figure class="article-cover"><img src="assets/editorial/below-the-address.svg" alt="An address resolving downward into the named components of a single building." width="960" height="600" fetchpriority="high"><figcaption>ILLUSTRATION / An address resolving downward into the named components of a single building.</figcaption></figure></div><div class="wrap article-layout"><nav class="article-toc" aria-label="On this page"><p class="toc-label">In this essay</p><ol><li><a href="#section-1">What an address is actually for</a></li><li><a href="#section-2">The work happens below the floor</a></li><li><a href="#section-3">Naming the things below the address</a></li><li><a href="#section-4">Three things this makes possible</a></li><li><a href="#section-5">What this does not solve</a></li><li><a href="#section-6">The layer underneath</a></li></ol></nav><article>
+<p class="lede">An address is a promise that a letter will arrive. It was designed for delivery to a building, by a person, once a day, and at that job it is close to perfect. Almost no operational work happens at that resolution. The valve, the riser, the bay, the window, the cabinet: these are what people and machines actually work on, and none of them has an address.</p>
+
+<p>This is not a complaint about addressing. It is an observation about where one system's scope ends and another's begins, and about how much of the difficulty in spatial software comes from asking addresses to do a job they were never shaped for.</p>
+
+<h2 id="section-1">What an address is actually for</h2>
+
+<p>An address encodes a route for a human carrying something: country, locality, street, number, sometimes a unit. It is readable, it is memorable, it degrades gracefully, and it has survived for centuries because it is well matched to its purpose. It also has properties that are fine for delivery and awkward for machines. It is not unique, because units and suites are formatted inconsistently. It changes when a street is renamed or a building is subdivided. It is ambiguous at the edges, because a corner building may legitimately have two. And it stops, categorically, at the entrance.</p>
+
+<p>Parcel identifiers improve on some of that. They are unique within a jurisdiction, they are authoritative, and they are stable until a subdivision. They describe land rather than things, which means they also stop at the ground.</p>
+
+<p>Place identifiers from mapping systems improve again: global, stable, entity-based rather than coordinate-based, and designed for joining data. Overture's GERS is the strongest example, and it does precisely what it is scoped to do, which is give mapped entities a shared identifier so datasets can be joined without conflation. It is deliberately a reference map, and a reference map should not contain every valve in every building.</p>
+
+<p>Each of these is good at a level. Stack them and there is still a floor, and the floor is roughly "the smallest thing somebody else also needs to refer to."</p>
+
+<h2 id="section-2">The work happens below the floor</h2>
+
+<p>Consider an ordinary maintenance ticket: the pressure-reducing valve on the domestic water riser, fourth floor, north mechanical closet. Follow that sentence through the systems that have to act on it.</p>
+
+<ul>
+<li>The maintenance system has an asset tag for it, unique inside that system.</li>
+<li>The building model has a GUID for it, unique inside that model file.</li>
+<li>The latest laser scan has a point cluster that a segmentation run labeled as a valve.</li>
+<li>The technician's work order has free text and a photograph.</li>
+<li>The building automation system has a point name on a controller.</li>
+</ul>
+
+<p>Five systems, five identifiers, one valve, and nothing connecting them except a person who knows all five. The building has an address, a parcel number, and probably a GERS ID. The valve has none of those, and the valve is what the work is about.</p>
+
+<p>The standard response is an integration: map the maintenance system's tags to the model's GUIDs, then map the scan segments to the tags, then map the controller points to the model. Each mapping is reasonable in isolation. Collectively they are per-pair work that must be maintained forever, and they break on the next re-scan, the next model revision, and the next vendor change.</p>
+
+<h2 id="section-3">Naming the things below the address</h2>
+
+<p>The alternative is to give the valve a persistent identity of its own and let each system attach its native identifier to it, once.</p>
+
+<pre>building   4did:id:5a89fc81f07739510a815e8c202160ac:4TNQ8W2KPJ6XR9B0MV3HZD
+             identified_as  overture.gers / fea28f69-7afa-460c-b270-61ef74cd340c
+             identified_as  city.parcel   / 0427-118-006
+
+  floor 4  4did:id:5a89fc81f07739510a815e8c202160ac:9BMX3KD7QW40TPJ2R6NVHZ   parent → building
+    closet 4did:id:5a89fc81f07739510a815e8c202160ac:2HVR6JQ8NX3BTKD9MW07PZ   parent → floor 4
+      valve 4did:id:5a89fc81f07739510a815e8c202160ac:QJ7MXT04HB2NRK9VPD3W6Z  parent → closet
+              identified_as  acme.cmms / VLV-4N-02
+              identified_as  bim.ifc   / 3tP9kA1QrE4xZ7mNc0VbYs
+              identified_as  bas.point / AHU4.DWR.PRV</pre>
+
+<p>The valve now has one name that all five systems can resolve, and each of them kept its own identifier. The maintenance system did not migrate. The model did not change. The controller point name is untouched. What changed is that there is a shared subject they can all point at, and the translation happens once at each edge instead of repeatedly between every pair.</p>
+
+<p>Note what the hierarchy is doing and what it is not. The parent chain is physical containment: the valve is in the closet, the closet is on the floor, the floor is in the building. That is a tree, which is what makes it useful for walking down from an address to a component and for composing poses without republishing everything beneath a parent that moved. Everything else that might contain the valve, including its maintenance zone, its fire district, its leasehold, and its grid cell, is a registration rather than a parent. Those overlap, come from different authorities, and expire; a tree would be the wrong shape for them.</p>
+
+<h2 id="section-4">Three things this makes possible</h2>
+
+<p><strong>Addressing work precisely.</strong> A dispatch, an inspection result, a sensor reading, or a photograph can attach to the valve rather than to the building. The building's record stops being a bucket of loosely associated documents and becomes a structure where each fact sits on the thing it is about.</p>
+
+<p><strong>Continuity across captures.</strong> Next year's scan is a new capture, and the segmentation that finds a valve in it is a new observation. If an upstream correspondence process establishes that this cluster is that valve, the observation attaches to the existing identity and the valve's record gains a second data point instead of the archive gaining a second disconnected delivery. The correspondence is real spatial work done by other systems. The identity layer stores the result and who stands behind it.</p>
+
+<p><strong>Reference that survives rephrasing.</strong> "The PRV on the fourth-floor domestic riser" and "VLV-4N-02" and a point in a scan viewer are three ways of describing one subject. Once they resolve to one identity, a request expressed in any of them can be acted on by a system that only understands another. That is also what makes the natural-language case tractable: the hard part is not parsing the sentence, it is having something stable for the parsed result to point at.</p>
+
+<h2 id="section-5">What this does not solve</h2>
+
+<p>Naming is not locating. Giving the valve a persistent identity says nothing about where it is in any particular robot's map, and does not help a technician find the closet. Localization, navigation, and registration remain the responsibility of the systems that do them.</p>
+
+<p>Nor does a name decide correspondence. Whether this cluster in this scan is that valve is a judgment made from evidence by a matching process, and sometimes by a person. The identity layer records the candidate, the evidence, the decision, and the authority behind it. Being able to reverse that decision later, with the reversal itself recorded, matters more than being able to make it automatically.</p>
+
+<p>And granularity is a choice with a cost. Not every bolt needs a name. The useful test is whether more than one system needs to refer to the thing independently. If only one system ever touches it, its own identifier is sufficient and a shared one is overhead. The valve passes that test, because five systems already refer to it and currently cannot agree that they are doing so.</p>
+
+<h2 id="section-6">The layer underneath</h2>
+
+<p>Addresses, parcels, and place identifiers are the right names for the mapped world, and the work to make them stable and joinable has been enormously valuable. What they intentionally do not cover is the operational layer: the components, equipment, temporary zones, and capture-specific anchors that the actual work addresses, and that change faster than any map release.</p>
+
+<p>Giving those things persistent identity is not an alternative to addressing. It is the layer below it, and it is where most of the difficulty, and most of the value, has been sitting unaddressed. You can see both forms of the identifier, and what their structure does and does not tell you, in the <a href="inspector.html">identity inspector</a>.</p>
+</article></div><section class="related" aria-label="Related articles"><div class="wrap"><div class="related-heading"><h2>Keep exploring.</h2><a href="blog.html">All writing ↗</a></div><div class="postlist"><a class="post post-featured" href="why-shared-name.html" data-category="foundations" data-featured="true"><div class="post-image"><img src="assets/editorial/why-shared-name.svg" alt="One identity, shared across different coordinate frames." width="960" height="600" loading="eager" decoding="async"><span class="post-index" aria-hidden="true">FIELD NOTE / 01</span></div><div class="post-body"><span class="k">The thesis</span><h2>Why a shared name is the missing layer</h2><p>Systems agree about geometry and disagree about identity. Here is the gap, and the fix.</p><div class="post-bottom"><div class="keywords"><span class="keyword">Identity</span><span class="keyword">Spatial computing</span></div><span class="read-time">3 min read <span class="post-arrow" aria-hidden="true">↗</span></span></div></div></a><a class="post" href="what-it-enables.html" data-category="possibilities" data-featured="false"><div class="post-image"><img src="assets/editorial/what-it-enables.svg" alt="An addressable city connecting physical and virtual layers." width="960" height="600" loading="eager" decoding="async"><span class="post-index" aria-hidden="true">FIELD NOTE / 02</span></div><div class="post-body"><span class="k">The payoff</span><h2>What a named world makes possible</h2><p>Interoperability is the floor. Once the world is addressable, data compounds, AI can operate in it, machines coordinate, and the real and virtual become one world.</p><div class="post-bottom"><div class="keywords"><span class="keyword">Addressable world</span><span class="keyword">Coordination</span></div><span class="read-time">5 min read <span class="post-arrow" aria-hidden="true">↗</span></span></div></div></a></div></div></section></main><footer class="site-footer"><div class="wrap"><div class="footer-top"><div><a class="site-brand" href="home.html" aria-label="4D-ID home"><svg class="brand-mark" viewBox="0 0 36 40" fill="none" aria-hidden="true"><path d="M18 2 34 11v18L18 38 2 29V11Z" stroke="#4dd0c4" stroke-width="1.4"/><path d="m18 8 11 6v12l-11 6-11-6V14Z" stroke="#7c8cff"/><path d="m7 14 11 6 11-6M18 20v12M18 8v12" stroke="#4dd0c4"/><circle cx="18" cy="20" r="2.4" fill="#4dd0c4"/></svg><span>4D-ID</span></a><p>One persistent name for everything real.<br>Working draft for persistent spatial identity.</p></div><nav class="footer-links" aria-label="Footer"><a href="blog.html">Writing</a><a href="demos.html">Live demos</a><a href="inspector.html">Identity inspector</a><a href="home.html#resolver">Resolver</a><a href="https://quantumstudio.exe.xyz/">Quantum Studio ↗</a></nav></div><div class="footer-bottom"><span>© 2026 4D-ID · A working draft offered for community review.</span><span>A Quantum Studio project.</span></div></div></footer></body></html>
